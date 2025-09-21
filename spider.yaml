@@ -1,0 +1,22 @@
+# Spider configuration file
+# For more information, visit: https://pub.dev/packages/spider
+
+# Groups allow you to organize your assets
+groups:
+  - path: assets/images
+    class_name: Images
+    types: [ .png, .jpg, .jpeg, .webp, .gif, .bmp, .wbmp, .svg ]
+  
+  - path: assets/gifs
+    class_name: SvgGifs
+    types: [ .gif ]
+  
+  - path: assets/fonts
+    class_name: Fonts
+    types: [ .ttf, .otf ]
+
+# Generate references for all assets
+no_comments: false
+export: true
+use_part_of: true
+package: gify
