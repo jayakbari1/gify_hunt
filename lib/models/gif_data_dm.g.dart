@@ -7,7 +7,7 @@ part of 'gif_data_dm.dart';
 // **************************************************************************
 
 GifDataDm _$GifDataDmFromJson(Map<String, dynamic> json) => GifDataDm(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       gifName: json['gifName'] as String,
       businessName: json['businessName'] as String,
       websiteUrl: json['websiteUrl'] as String?,
