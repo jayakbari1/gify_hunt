@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'dart:convert';
 
+import '../models/gif_data_dm.dart';
+
 class Startup {
   final String id;
   final String name;
@@ -9,6 +11,11 @@ class Startup {
   final String? gifFileName;
   final DateTime createdAt;
   final bool isUserSubmitted;
+  final String status; // 'pending', 'approved', 'rejected'
+  final DateTime? submittedAt;
+  final DateTime? reviewedAt;
+  final String? notificationMessage;
+  final String? userId;
 
   Startup({
     required this.id,
@@ -18,6 +25,11 @@ class Startup {
     this.gifFileName,
     required this.createdAt,
     this.isUserSubmitted = false,
+    this.status = 'approved', // Default for static data
+    this.submittedAt,
+    this.reviewedAt,
+    this.notificationMessage,
+    this.userId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -28,6 +40,11 @@ class Startup {
     'gifFileName': gifFileName,
     'createdAt': createdAt.toIso8601String(),
     'isUserSubmitted': isUserSubmitted,
+    'status': status,
+    'submittedAt': submittedAt?.toIso8601String(),
+    'reviewedAt': reviewedAt?.toIso8601String(),
+    'notificationMessage': notificationMessage,
+    'userId': userId,
   };
 
   factory Startup.fromJson(Map<String, dynamic> json) => Startup(
@@ -38,6 +55,22 @@ class Startup {
     gifFileName: json['gifFileName'],
     createdAt: DateTime.parse(json['createdAt']),
     isUserSubmitted: json['isUserSubmitted'] ?? false,
+    status: json['status'],
+    submittedAt: json['submittedAt'] != null ? DateTime.parse(json['submittedAt']) : null,
+    reviewedAt: json['reviewedAt'] != null ? DateTime.parse(json['reviewedAt']) : null,
+    notificationMessage: json['notificationMessage'],
+    userId: json['userId'],
+  );
+
+  factory Startup.fromGifDataDm(GifDataDm dm) => Startup(
+    id: dm.id.toString(),
+    name: dm.businessName,
+    websiteUrl: dm.websiteUrl ?? '',
+    gifPath: dm.gifPath,
+    gifFileName: dm.gifName,
+    createdAt: dm.createdAt,
+    isUserSubmitted: dm.isUserSubmitted,
+    status: 'approved', // dummy data is approved
   );
 
   // Helper method to convert bytes to base64 for web storage
@@ -55,16 +88,28 @@ class Startup {
     String? name,
     String? websiteUrl,
     String? gifPath,
+    String? gifFileName,
     DateTime? createdAt,
     bool? isUserSubmitted,
+    String? status,
+    DateTime? submittedAt,
+    DateTime? reviewedAt,
+    String? notificationMessage,
+    String? userId,
   }) {
     return Startup(
       id: id ?? this.id,
       name: name ?? this.name,
       websiteUrl: websiteUrl ?? this.websiteUrl,
       gifPath: gifPath ?? this.gifPath,
+      gifFileName: gifFileName ?? this.gifFileName,
       createdAt: createdAt ?? this.createdAt,
       isUserSubmitted: isUserSubmitted ?? this.isUserSubmitted,
+      status: status ?? this.status,
+      submittedAt: submittedAt ?? this.submittedAt,
+      reviewedAt: reviewedAt ?? this.reviewedAt,
+      notificationMessage: notificationMessage ?? this.notificationMessage,
+      userId: userId ?? this.userId,
     );
   }
 
@@ -80,6 +125,6 @@ class Startup {
 
   @override
   String toString() {
-    return 'Startup{id: $id, name: $name, websiteUrl: $websiteUrl, gifPath: $gifPath, createdAt: $createdAt, isUserSubmitted: $isUserSubmitted}';
+    return 'Startup{id: $id, name: $name, websiteUrl: $websiteUrl, gifPath: $gifPath, createdAt: $createdAt, isUserSubmitted: $isUserSubmitted, status: $status, submittedAt: $submittedAt, reviewedAt: $reviewedAt, notificationMessage: $notificationMessage, userId: $userId}';
   }
 }

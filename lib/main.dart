@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:gify/gify/resources.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
-import 'data/comprehensive_dummy_gif_data.dart';
+import 'config/firebase_options_dev.dart';
 import 'models/startup.dart';
 import 'providers/startup_provider.dart';
 import 'screens/add_startup_screen.dart';
 
-void main() {
-  // Initialize comprehensive dummy data for all GIFs
-  DummyGifData.initializeDummyData();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptionsDev.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -35,20 +35,12 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  // Calculate responsive grid cross axis count
   int _calculateCrossAxisCount(double screenWidth) {
-    // 88px container width + spacing
     const double containerWidth = 88.0;
     const double spacing = 8.0;
     const double padding = 16.0;
-
-    // Calculate available width
     double availableWidth = screenWidth - (padding * 2);
-
-    // Calculate how many containers can fit
     int crossAxisCount = (availableWidth / (containerWidth + spacing)).floor();
-
-    // Ensure minimum of 2 and maximum based on screen size
     if (crossAxisCount < 2) return 2;
     if (screenWidth > 1200) return crossAxisCount.clamp(2, 12);
     if (screenWidth > 800) return crossAxisCount.clamp(2, 8);
@@ -60,7 +52,6 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Main content
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -71,13 +62,9 @@ class HomePage extends StatelessWidget {
             child: SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final crossAxisCount = _calculateCrossAxisCount(
-                    constraints.maxWidth,
-                  );
-
+                  final crossAxisCount = _calculateCrossAxisCount(constraints.maxWidth);
                   return Column(
                     children: [
-                      // Header
                       Container(
                         padding: const EdgeInsets.all(16.0),
                         child: const Text(
@@ -86,57 +73,26 @@ class HomePage extends StatelessWidget {
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                offset: Offset(2, 2),
-                                blurRadius: 4,
-                                color: Colors.black45,
-                              ),
-                            ],
+                            shadows: [Shadow(offset: Offset(2, 2), blurRadius: 4, color: Colors.black45)],
                           ),
                         ),
                       ),
-
-                      // Grid View with proper padding for FAB
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: 16.0,
-                            right: 16.0,
-                            bottom: 80.0, // Extra bottom padding for FAB
-                          ),
+                          padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 80.0),
                           child: Consumer<StartupProvider>(
                             builder: (context, provider, child) {
                               final allGifs = <Map<String, dynamic>>[];
-
-                              // Add static GIFs
-                              for (
-                                int i = 0;
-                                i < SvgGifs.gifPaths.length;
-                                i++
-                              ) {
-                                allGifs.add({
-                                  'path': SvgGifs.gifPaths[i],
-                                  'isUserSubmitted': false,
-                                });
+                              for (final startup in provider.startups.where((s) => s.status == 'approved')) {
+                                allGifs.add({'path': startup.gifPath, 'isUserSubmitted': startup.isUserSubmitted});
                               }
-
-                              // Add user submitted GIFs
-                              for (final startup in provider.startups) {
-                                allGifs.add({
-                                  'path': startup.gifPath,
-                                  'isUserSubmitted': startup.isUserSubmitted,
-                                });
-                              }
-
                               return GridView.builder(
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: crossAxisCount,
-                                      crossAxisSpacing: 8.0,
-                                      mainAxisSpacing: 8.0,
-                                      childAspectRatio: 88 / 31,
-                                    ),
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: crossAxisCount,
+                                  crossAxisSpacing: 8.0,
+                                  mainAxisSpacing: 8.0,
+                                  childAspectRatio: 88 / 31,
+                                ),
                                 itemCount: allGifs.length,
                                 itemBuilder: (context, index) {
                                   final gifData = allGifs[index];
@@ -161,22 +117,19 @@ class HomePage extends StatelessWidget {
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 20.0, right: 8.0),
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AddStartupScreen()),
-            );
-          },
-          backgroundColor: Colors.cyan.withOpacity(0.9),
-          foregroundColor: Colors.white,
-          elevation: 8,
-          extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
-          icon: const Icon(Icons.add_business, size: 20),
-          label: const Text(
-            'Add Startup',
-            style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton.extended(
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AddStartupScreen())),
+              backgroundColor: Colors.cyan.withOpacity(0.9),
+              foregroundColor: Colors.white,
+              elevation: 8,
+              extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
+              icon: const Icon(Icons.add_business, size: 20),
+              label: const Text('Add Startup', style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5)),
+            ),
+          ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -267,14 +220,12 @@ class _GifContainerState extends State<GifContainer>
   }
 
   Widget _buildImage() {
-    // Check if this is a base64 encoded string (user-submitted gif)
     if (widget.isUserSubmitted &&
         (widget.gifPath.contains('data:') ||
             widget.gifPath.startsWith('/9j/') ||
             widget.gifPath.startsWith('iVBOR') ||
             widget.gifPath.contains('base64'))) {
       try {
-        // For base64 strings, decode and use Image.memory
         final bytes = Startup.base64ToBytes(widget.gifPath);
         return Image.memory(
           bytes,
@@ -287,7 +238,6 @@ class _GifContainerState extends State<GifContainer>
         return _buildErrorWidget();
       }
     } else {
-      // For asset images, use Image.asset
       return Image.asset(
         widget.gifPath,
         fit: BoxFit.cover,

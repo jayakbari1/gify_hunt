@@ -1,16 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:typed_data';
+
 import '../models/startup.dart';
-import '../models/gif_data_dm.dart';
 import '../providers/startup_provider.dart';
 import '../utils/validators.dart';
-import '../widgets/custom_text_form_field.dart';
-import '../widgets/gif_upload_widget.dart';
-import '../widgets/custom_submit_button.dart';
-import '../widgets/guidelines_widget.dart';
-import '../data/comprehensive_dummy_gif_data.dart';
 
 class AddStartupScreen extends StatefulWidget {
   const AddStartupScreen({super.key});
@@ -24,11 +21,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _urlController = TextEditingController();
-  
+
   Uint8List? _selectedGifBytes;
   String? _selectedGifFileName;
   bool _isSubmitting = false;
-  
+
   late AnimationController _fadeController;
   late AnimationController _glowController;
   late Animation<double> _fadeAnimation;
@@ -45,23 +42,16 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeOut,
-    ));
-    
-    _glowAnimation = Tween<double>(
-      begin: 0.3,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _glowController,
-      curve: Curves.easeInOut,
-    ));
-    
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeOut));
+
+    _glowAnimation = Tween<double>(begin: 0.3, end: 1.0).animate(
+      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+    );
+
     _fadeController.forward();
     _glowController.repeat(reverse: true);
   }
@@ -179,9 +169,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Colors.cyan, Colors.blue],
-            ),
+            gradient: const LinearGradient(colors: [Colors.cyan, Colors.blue]),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -210,11 +198,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             fontWeight: FontWeight.bold,
             letterSpacing: 3,
             shadows: [
-              Shadow(
-                color: Colors.cyan,
-                blurRadius: 4,
-                offset: Offset(0, 2),
-              ),
+              Shadow(color: Colors.cyan, blurRadius: 4, offset: Offset(0, 2)),
             ],
           ),
         ),
@@ -235,10 +219,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.cyan.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: Colors.cyan.withOpacity(0.3), width: 1),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -309,11 +290,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       children: [
         Row(
           children: [
-            Icon(
-              icon,
-              color: Colors.cyan,
-              size: 16,
-            ),
+            Icon(icon, color: Colors.cyan, size: 16),
             const SizedBox(width: 8),
             Text(
               label,
@@ -360,17 +337,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(
-                color: Colors.cyan,
-                width: 2,
-              ),
+              borderSide: const BorderSide(color: Colors.cyan, width: 2),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(
-                color: Colors.red,
-                width: 1,
-              ),
+              borderSide: const BorderSide(color: Colors.red, width: 1),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -388,11 +359,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       children: [
         Row(
           children: [
-            const Icon(
-              Icons.file_upload,
-              color: Colors.cyan,
-              size: 16,
-            ),
+            const Icon(Icons.file_upload, color: Colors.cyan, size: 16),
             const SizedBox(width: 8),
             const Text(
               'VISUAL ASSET UPLOAD',
@@ -412,7 +379,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: _selectedGifBytes != null 
+              color: _selectedGifBytes != null
                   ? Colors.green.withOpacity(0.5)
                   : Colors.cyan.withOpacity(0.3),
               width: 2,
@@ -432,8 +399,10 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                     animation: _glowAnimation,
                     builder: (context, child) {
                       return Icon(
-                        _selectedGifBytes != null ? Icons.check_circle : Icons.cloud_upload,
-                        color: _selectedGifBytes != null 
+                        _selectedGifBytes != null
+                            ? Icons.check_circle
+                            : Icons.cloud_upload,
+                        color: _selectedGifBytes != null
                             ? Colors.green
                             : Colors.cyan.withOpacity(_glowAnimation.value),
                         size: 32,
@@ -442,11 +411,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    _selectedGifBytes != null 
+                    _selectedGifBytes != null
                         ? 'FILE LOADED: ${_selectedGifFileName}'
                         : 'CLICK TO UPLOAD GIF',
                     style: TextStyle(
-                      color: _selectedGifBytes != null 
+                      color: _selectedGifBytes != null
                           ? Colors.green
                           : Colors.cyan.withOpacity(0.8),
                       fontSize: 12,
@@ -484,28 +453,31 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         builder: (context, child) {
           return ElevatedButton(
             onPressed: _isSubmitting ? null : _submitForm,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              side: BorderSide(
-                color: Colors.cyan.withOpacity(_isSubmitting ? 0.3 : _glowAnimation.value),
-                width: 2,
-              ),
-            ).copyWith(
-              backgroundColor: MaterialStateProperty.resolveWith((states) {
-                if (states.contains(MaterialState.pressed)) {
-                  return Colors.cyan.withOpacity(0.1);
-                }
-                if (states.contains(MaterialState.hovered)) {
-                  return Colors.cyan.withOpacity(0.05);
-                }
-                return Colors.cyan.withOpacity(0.02);
-              }),
-            ),
+            style:
+                ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  side: BorderSide(
+                    color: Colors.cyan.withOpacity(
+                      _isSubmitting ? 0.3 : _glowAnimation.value,
+                    ),
+                    width: 2,
+                  ),
+                ).copyWith(
+                  backgroundColor: MaterialStateProperty.resolveWith((states) {
+                    if (states.contains(MaterialState.pressed)) {
+                      return Colors.cyan.withOpacity(0.1);
+                    }
+                    if (states.contains(MaterialState.hovered)) {
+                      return Colors.cyan.withOpacity(0.05);
+                    }
+                    return Colors.cyan.withOpacity(0.02);
+                  }),
+                ),
             child: _isSubmitting
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -550,10 +522,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.yellow.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: Colors.yellow.withOpacity(0.3), width: 1),
         color: Colors.yellow.withOpacity(0.05),
       ),
       child: Column(
@@ -585,26 +554,34 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             '• Network address must be accessible',
             '• Content review process: 24-48 hours',
             '• Professional content only',
-          ].map((guideline) => Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: Text(
-              guideline,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
-                fontSize: 11,
-                letterSpacing: 0.3,
+          ].map(
+            (guideline) => Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                guideline,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 11,
+                  letterSpacing: 0.3,
+                ),
               ),
             ),
-          )),
+          ),
         ],
       ),
     );
   }
 
-  // Add the missing methods
   Future<void> _pickGifFile() async {
-    // Implement file picker logic here
-    // This is a placeholder - you'll need to implement actual file picking
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      final bytes = await image.readAsBytes();
+      setState(() {
+        _selectedGifBytes = bytes;
+        _selectedGifFileName = image.name;
+      });
+    }
   }
 
   Future<void> _submitForm() async {
@@ -624,7 +601,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     try {
       // Convert bytes to base64 for web storage
       final base64Gif = Startup.bytesToBase64(_selectedGifBytes!);
-      
+
       final startup = Startup(
         id: const Uuid().v4(),
         name: _nameController.text.trim(),
@@ -635,29 +612,13 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         isUserSubmitted: true,
       );
 
-      // Also add to GIF data for hover functionality
-      final gifData = GifDataDm(
-        id: DummyGifData.getNextId(),
-        gifName: _selectedGifFileName ?? 'user_gif.gif',
-        businessName: _nameController.text.trim(),
-        websiteUrl: _urlController.text.trim(),
-        description: 'User submitted startup',
-        gifPath: base64Gif,
-        isUserSubmitted: true,
-        createdAt: DateTime.now(),
-      );
-      
-      DummyGifData.addGifData(gifData);
-
-      final success = await Provider.of<StartupProvider>(context, listen: false)
-          .addStartup(startup);
-
-      if (success) {
-        _showSnackBar('Startup deployed successfully!');
-        Navigator.pop(context);
-      } else {
-        _showSnackBar('Deployment failed. Please retry.', isError: true);
-      }
+      await Provider.of<StartupProvider>(
+        context,
+        listen: false,
+      ).addStartup(startup);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Submitted for review!')));
     } catch (e) {
       _showSnackBar('System error: $e', isError: true);
     } finally {
@@ -690,13 +651,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             ),
           ],
         ),
-        backgroundColor: isError 
-            ? Colors.red.withOpacity(0.9) 
+        backgroundColor: isError
+            ? Colors.red.withOpacity(0.9)
             : Colors.green.withOpacity(0.9),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         margin: const EdgeInsets.all(16),
       ),
     );
@@ -722,10 +681,7 @@ class HeaderWidget extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'Submit your startup to be featured in our 88x31 pixel showcase gallery',
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.8),
-            fontSize: 16,
-          ),
+          style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 16),
         ),
       ],
     );
