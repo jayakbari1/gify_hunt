@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:html' as html;
 
 import 'config/firebase_options_dev.dart';
 import 'models/startup.dart';
@@ -96,30 +97,23 @@ class HomePage extends StatelessWidget {
                           ),
                           child: Consumer<StartupProvider>(
                             builder: (context, provider, child) {
-                              final allGifs = <Map<String, dynamic>>[];
-                              for (final startup in provider.startups.where(
-                                (s) => s.status == 'approved',
-                              )) {
-                                allGifs.add({
-                                  'path': startup.gifPath,
-                                  'isUserSubmitted': startup.isUserSubmitted,
-                                });
-                              }
+                              final approvedStartups = provider.startups.where((s) => s.status == 'approved').toList();
                               return GridView.builder(
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: crossAxisCount,
-                                      crossAxisSpacing: 8.0,
-                                      mainAxisSpacing: 8.0,
-                                      childAspectRatio: 88 / 31,
-                                    ),
-                                itemCount: allGifs.length,
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: crossAxisCount,
+                                  crossAxisSpacing: 8.0,
+                                  mainAxisSpacing: 8.0,
+                                  childAspectRatio: 88 / 31,
+                                ),
+                                itemCount: approvedStartups.length,
                                 itemBuilder: (context, index) {
-                                  final gifData = allGifs[index];
+                                  final startup = approvedStartups[index];
                                   return GifContainer(
-                                    gifPath: gifData['path'],
+                                    gifPath: startup.gifPath,
                                     index: index,
-                                    isUserSubmitted: gifData['isUserSubmitted'],
+                                    isUserSubmitted: startup.isUserSubmitted,
+                                    name: startup.name,
+                                    websiteUrl: startup.websiteUrl,
                                   );
                                 },
                               );
@@ -170,12 +164,16 @@ class GifContainer extends StatefulWidget {
   final String gifPath;
   final int index;
   final bool isUserSubmitted;
+  final String name;
+  final String websiteUrl;
 
   const GifContainer({
     super.key,
     required this.gifPath,
     required this.index,
     this.isUserSubmitted = false,
+    required this.name,
+    required this.websiteUrl,
   });
 
   @override
@@ -208,52 +206,78 @@ class _GifContainerState extends State<GifContainer>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _scaleAnimation.value,
-          child: Container(
-            width: 88,
-            height: 31,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-                width: 0.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 4,
-                  offset: const Offset(2, 2),
+    return Tooltip(
+      message: widget.name,
+      child: GestureDetector(
+        onTap: () => html.window.open(widget.websiteUrl, '_blank'),
+        child: MouseRegion(
+          onEnter: (_) {
+            _animationController.forward();
+          },
+          onExit: (_) {
+            _animationController.reverse();
+          },
+          child: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _scaleAnimation.value,
+                child: Container(
+                  width: 88,
+                  height: 31,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.2),
+                      width: 0.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 4,
+                        offset: const Offset(2, 2),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: _buildImage(),
+                  ),
                 ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: _buildImage(),
-            ),
+              );
+            },
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
   Widget _buildImage() {
     if (widget.isUserSubmitted) {
-      try {
-        final bytes = Startup.base64ToBytes(widget.gifPath);
-        return Image.memory(
-          bytes,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return _buildErrorWidget();
-          },
-        );
-      } catch (e) {
-        return _buildErrorWidget();
-      }
+      final dataUrl = 'data:image/gif;base64,${widget.gifPath}';
+      return Image.network(
+        dataUrl,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            color: Colors.transparent,
+            child: Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.cyan.withOpacity(0.5)),
+                ),
+              ),
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return _buildErrorWidget();
+        },
+      );
     } else {
       return Image.asset(
         widget.gifPath,
