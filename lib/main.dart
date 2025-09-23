@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'config/firebase_options_dev.dart';
@@ -9,7 +9,9 @@ import 'screens/add_startup_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptionsDev.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptionsDev.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -62,7 +64,9 @@ class HomePage extends StatelessWidget {
             child: SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final crossAxisCount = _calculateCrossAxisCount(constraints.maxWidth);
+                  final crossAxisCount = _calculateCrossAxisCount(
+                    constraints.maxWidth,
+                  );
                   return Column(
                     children: [
                       Container(
@@ -73,26 +77,42 @@ class HomePage extends StatelessWidget {
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            shadows: [Shadow(offset: Offset(2, 2), blurRadius: 4, color: Colors.black45)],
+                            shadows: [
+                              Shadow(
+                                offset: Offset(2, 2),
+                                blurRadius: 4,
+                                color: Colors.black45,
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 80.0),
+                          padding: const EdgeInsets.only(
+                            left: 16.0,
+                            right: 16.0,
+                            bottom: 80.0,
+                          ),
                           child: Consumer<StartupProvider>(
                             builder: (context, provider, child) {
                               final allGifs = <Map<String, dynamic>>[];
-                              for (final startup in provider.startups.where((s) => s.status == 'approved')) {
-                                allGifs.add({'path': startup.gifPath, 'isUserSubmitted': startup.isUserSubmitted});
+                              for (final startup in provider.startups.where(
+                                (s) => s.status == 'approved',
+                              )) {
+                                allGifs.add({
+                                  'path': startup.gifPath,
+                                  'isUserSubmitted': startup.isUserSubmitted,
+                                });
                               }
                               return GridView.builder(
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: crossAxisCount,
-                                  crossAxisSpacing: 8.0,
-                                  mainAxisSpacing: 8.0,
-                                  childAspectRatio: 88 / 31,
-                                ),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: crossAxisCount,
+                                      crossAxisSpacing: 8.0,
+                                      mainAxisSpacing: 8.0,
+                                      childAspectRatio: 88 / 31,
+                                    ),
                                 itemCount: allGifs.length,
                                 itemBuilder: (context, index) {
                                   final gifData = allGifs[index];
@@ -121,13 +141,22 @@ class HomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             FloatingActionButton.extended(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AddStartupScreen())),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AddStartupScreen()),
+              ),
               backgroundColor: Colors.cyan.withOpacity(0.9),
               foregroundColor: Colors.white,
               elevation: 8,
               extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
               icon: const Icon(Icons.add_business, size: 20),
-              label: const Text('Add Startup', style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5)),
+              label: const Text(
+                'Add Startup',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
+              ),
             ),
           ],
         ),
@@ -179,52 +208,40 @@ class _GifContainerState extends State<GifContainer>
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) {
-        _animationController.forward();
-      },
-      onExit: (_) {
-        _animationController.reverse();
-      },
-      child: AnimatedBuilder(
-        animation: _animationController,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Container(
-              width: 88,
-              height: 31,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 0.5,
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: Container(
+            width: 88,
+            height: 31,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 0.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 4,
+                  offset: const Offset(2, 2),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 4,
-                    offset: const Offset(2, 2),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: _buildImage(),
-              ),
+              ],
             ),
-          );
-        },
-      ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: _buildImage(),
+            ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildImage() {
-    if (widget.isUserSubmitted &&
-        (widget.gifPath.contains('data:') ||
-            widget.gifPath.startsWith('/9j/') ||
-            widget.gifPath.startsWith('iVBOR') ||
-            widget.gifPath.contains('base64'))) {
+    if (widget.isUserSubmitted) {
       try {
         final bytes = Startup.base64ToBytes(widget.gifPath);
         return Image.memory(

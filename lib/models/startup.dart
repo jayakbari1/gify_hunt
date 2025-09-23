@@ -80,6 +80,10 @@ class Startup {
 
   // Helper method to convert base64 back to bytes
   static Uint8List base64ToBytes(String base64String) {
+    // Handle data URL format: data:image/gif;base64,base64data
+    if (base64String.contains('base64,')) {
+      base64String = base64String.split('base64,')[1];
+    }
     return base64Decode(base64String);
   }
 
