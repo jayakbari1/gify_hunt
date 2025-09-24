@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../models/startup.dart';
 import '../providers/startup_provider.dart';
@@ -647,16 +648,38 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         context,
         listen: false,
       ).addStartup(startup);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Submitted for review!')));
+
+      // On success: Navigate back to home and show toast
+      Navigator.pop(context);
+      Fluttertoast.showToast(
+        msg: "Submission successful!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     } catch (e) {
+      // On error: Show SnackBar and reset form state
       _showSnackBar('System error: $e', isError: true);
+      _resetForm();
     } finally {
       setState(() {
         _isSubmitting = false;
       });
     }
+  }
+
+  void _resetForm() {
+    _formKey.currentState?.reset();
+    _nameController.clear();
+    _urlController.clear();
+    _emailController.clear();
+    _taglineController.clear();
+    setState(() {
+      _selectedGifBytes = null;
+      _selectedGifFileName = null;
+    });
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
