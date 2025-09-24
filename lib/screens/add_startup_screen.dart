@@ -21,6 +21,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _urlController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _taglineController = TextEditingController();
 
   Uint8List? _selectedGifBytes;
   String? _selectedGifFileName;
@@ -62,6 +64,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     _glowController.dispose();
     _nameController.dispose();
     _urlController.dispose();
+    _emailController.dispose();
+    _taglineController.dispose();
     super.dispose();
   }
 
@@ -243,6 +247,10 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           const SizedBox(height: 24),
           _buildWebsiteUrlField(),
           const SizedBox(height: 24),
+          _buildEmailField(),
+          const SizedBox(height: 24),
+          _buildTaglineField(),
+          const SizedBox(height: 24),
           _buildGifUploadSection(),
           const SizedBox(height: 32),
           _buildSubmitButton(),
@@ -274,6 +282,27 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         (value) => Validators.required(value, fieldName: 'Website URL'),
         Validators.url,
       ]),
+    );
+  }
+
+  Widget _buildEmailField() {
+    return _buildCyberTextField(
+      controller: _emailController,
+      label: 'CONTACT EMAIL',
+      hint: 'Enter contact email...',
+      icon: Icons.email,
+      keyboardType: TextInputType.emailAddress,
+      validator: Validators.email,
+    );
+  }
+
+  Widget _buildTaglineField() {
+    return _buildCyberTextField(
+      controller: _taglineController,
+      label: 'TAGLINE',
+      hint: 'Enter startup tagline...',
+      icon: Icons.short_text,
+      validator: Validators.required,
     );
   }
 
@@ -606,6 +635,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         id: const Uuid().v4(),
         name: _nameController.text.trim(),
         websiteUrl: _urlController.text.trim(),
+        email: _emailController.text.trim(),
+        tagline: _taglineController.text.trim(),
         gifPath: base64Gif,
         gifFileName: _selectedGifFileName,
         createdAt: DateTime.now(),
