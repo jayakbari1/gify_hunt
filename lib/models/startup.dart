@@ -7,6 +7,8 @@ class Startup {
   final String id;
   final String name;
   final String websiteUrl;
+  final String email;
+  final String tagline;
   final String gifPath; // For web, this will be a base64 encoded string
   final String? gifFileName;
   final DateTime createdAt;
@@ -21,6 +23,8 @@ class Startup {
     required this.id,
     required this.name,
     required this.websiteUrl,
+    required this.email,
+    required this.tagline,
     required this.gifPath,
     this.gifFileName,
     required this.createdAt,
@@ -36,6 +40,8 @@ class Startup {
     'id': id,
     'name': name,
     'websiteUrl': websiteUrl,
+    'email': email,
+    'tagline': tagline,
     'gifPath': gifPath,
     'gifFileName': gifFileName,
     'createdAt': createdAt.toIso8601String(),
@@ -51,6 +57,8 @@ class Startup {
     id: json['id'],
     name: json['name'],
     websiteUrl: json['websiteUrl'],
+    email: json['email'],
+    tagline: json['tagline'],
     gifPath: json['gifPath'],
     gifFileName: json['gifFileName'],
     createdAt: DateTime.parse(json['createdAt']),
@@ -66,6 +74,8 @@ class Startup {
     id: dm.id.toString(),
     name: dm.businessName,
     websiteUrl: dm.websiteUrl ?? '',
+    email: '', // Add appropriate email value
+    tagline: '', // Add appropriate tagline value
     gifPath: dm.gifPath,
     gifFileName: dm.gifName,
     createdAt: dm.createdAt,
@@ -91,6 +101,8 @@ class Startup {
     String? id,
     String? name,
     String? websiteUrl,
+    String? email,
+    String? tagline,
     String? gifPath,
     String? gifFileName,
     DateTime? createdAt,
@@ -105,6 +117,8 @@ class Startup {
       id: id ?? this.id,
       name: name ?? this.name,
       websiteUrl: websiteUrl ?? this.websiteUrl,
+      email: email ?? this.email,
+      tagline: tagline ?? this.tagline,
       gifPath: gifPath ?? this.gifPath,
       gifFileName: gifFileName ?? this.gifFileName,
       createdAt: createdAt ?? this.createdAt,
@@ -129,6 +143,6 @@ class Startup {
 
   @override
   String toString() {
-    return 'Startup{id: $id, name: $name, websiteUrl: $websiteUrl, gifPath: $gifPath, createdAt: $createdAt, isUserSubmitted: $isUserSubmitted, status: $status, submittedAt: $submittedAt, reviewedAt: $reviewedAt, notificationMessage: $notificationMessage, userId: $userId}';
+    return 'Startup{id: $id, name: $name, websiteUrl: $websiteUrl, email: $email, tagline: $tagline, gifPath: $gifPath, createdAt: $createdAt, isUserSubmitted: $isUserSubmitted, status: $status, submittedAt: $submittedAt, reviewedAt: $reviewedAt, notificationMessage: $notificationMessage, userId: $userId}';
   }
 }
