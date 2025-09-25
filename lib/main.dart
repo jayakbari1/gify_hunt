@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../models/startup.dart';
 import 'config/firebase_options_dev.dart';
 import 'providers/startup_provider.dart';
+import 'constants/str_constants.dart';
 import 'screens/add_startup_screen.dart';
 
 void main() async {
@@ -126,8 +127,8 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(height: 40), // Space for close button
                         Text(
                           _dialogCount % 2 == 1
-                              ? 'STARTUP SPOTLIGHT'
-                              : 'TAGLINE FLASH',
+                              ? StrConstants.startupSpotlight
+                              : StrConstants.taglineFlash,
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 20,
@@ -180,7 +181,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               child: const Text(
-                                'VISIT SITE',
+                                StrConstants.visitSite,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1,
@@ -198,7 +199,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               child: const Text(
-                                'CANCEL',
+                                StrConstants.cancel,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1,
