@@ -1,10 +1,13 @@
+import 'dart:async';
+import 'dart:html' as html;
+import 'dart:math';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:html' as html;
 
+import '../models/startup.dart';
 import 'config/firebase_options_dev.dart';
-import 'models/startup.dart';
 import 'providers/startup_provider.dart';
 import 'screens/add_startup_screen.dart';
 
@@ -35,8 +38,196 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  Timer? _timer;
+  bool _isDialogShowing = false;
+  int _dialogCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      _showRandomStartupDialog();
+    });
+  }
+
+  void _showRandomStartupDialog() {
+    if (_isDialogShowing) return;
+
+    final provider = Provider.of<StartupProvider>(context, listen: false);
+    final approvedStartups = provider.startups
+        .where((s) => s.status == 'approved')
+        .toList();
+    if (approvedStartups.isEmpty) return;
+
+    final random = Random();
+    final startup = approvedStartups[random.nextInt(approvedStartups.length)];
+
+    _isDialogShowing = true;
+    _dialogCount++;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismiss by tapping outside
+      builder: (BuildContext context) {
+        // Auto close after 10 seconds
+        Timer(const Duration(seconds: 10), () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        });
+
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            children: [
+              // Background GIF with very low opacity filling the dialog
+              Positioned.fill(
+                child: Opacity(
+                  opacity: 0.05, // Very low opacity for subtle animation
+                  child: Image.memory(
+                    Startup.base64ToBytes(startup.gifPath),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(),
+                  ),
+                ),
+              ),
+              // Foreground content
+              Container(
+                width: 450,
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.95), // Slight transparency to blend with GIF
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black, width: 2),
+                ),
+                child: Stack(
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 40), // Space for close button
+                        Text(
+                          _dialogCount % 2 == 1
+                              ? 'STARTUP SPOTLIGHT'
+                              : 'TAGLINE FLASH',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                            fontFamily: 'Courier',
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        if (_dialogCount % 2 == 1) ...[
+                          Text(
+                            startup.name,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Courier',
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        Text(
+                          '"${startup.tagline}"',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontStyle: FontStyle.italic,
+                            fontFamily: 'Courier',
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 32),
+                        // Buttons row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                html.window.open(startup.websiteUrl, '_blank');
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              child: const Text(
+                                'VISIT SITE',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey,
+                                foregroundColor: Colors.black,
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              child: const Text(
+                                'CANCEL',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Colors.black, size: 28),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    ).then((_) {
+      _isDialogShowing = false;
+    });
+  }
 
   int _calculateCrossAxisCount(double screenWidth) {
     const double containerWidth = 88.0;
@@ -97,14 +288,17 @@ class HomePage extends StatelessWidget {
                           ),
                           child: Consumer<StartupProvider>(
                             builder: (context, provider, child) {
-                              final approvedStartups = provider.startups.where((s) => s.status == 'approved').toList();
+                              final approvedStartups = provider.startups
+                                  .where((s) => s.status == 'approved')
+                                  .toList();
                               return GridView.builder(
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: crossAxisCount,
-                                  crossAxisSpacing: 8.0,
-                                  mainAxisSpacing: 8.0,
-                                  childAspectRatio: 88 / 31,
-                                ),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: crossAxisCount,
+                                      crossAxisSpacing: 8.0,
+                                      mainAxisSpacing: 8.0,
+                                      childAspectRatio: 88 / 31,
+                                    ),
                                 itemCount: approvedStartups.length,
                                 itemBuilder: (context, index) {
                                   final startup = approvedStartups[index];
@@ -268,7 +462,9 @@ class _GifContainerState extends State<GifContainer>
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.cyan.withOpacity(0.5)),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.cyan.withOpacity(0.5),
+                  ),
                 ),
               ),
             ),
