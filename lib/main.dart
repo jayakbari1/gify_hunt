@@ -46,19 +46,38 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Timer? _timer;
   bool _isDialogShowing = false;
   int _dialogCount = 0;
+  StartupProvider? _provider;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _startTimer();
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _provider = Provider.of<StartupProvider>(context, listen: false);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _timer?.cancel();
+      _timer = null;
+    } else if (state == AppLifecycleState.resumed) {
+      _startTimer();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     super.dispose();
   }
@@ -70,10 +89,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showRandomStartupDialog() {
-    if (_isDialogShowing) return;
+    if (!mounted || _isDialogShowing || _provider == null) return;
 
-    final provider = Provider.of<StartupProvider>(context, listen: false);
-    final approvedStartups = provider.startups
+    // Don't show dialog if HomePage is not the current route
+    if (ModalRoute.of(context)?.isCurrent != true) return;
+
+    final approvedStartups = _provider!.startups
         .where((s) => s.status == 'approved')
         .toList();
     if (approvedStartups.isEmpty) return;
