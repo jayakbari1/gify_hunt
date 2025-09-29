@@ -7,7 +7,7 @@ name: Build
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ gh-pages, develop ]
 
 jobs:
   build:
@@ -26,13 +26,13 @@ jobs:
         run: flutter pub get
 
       - name: Build Artifect
-        run: flutter build web
+        run:  flutter build web
 
       - name: Deploy to GitHub Pages
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
         with:
-          target_branch: develop
+          target_branch: gh-pages
           build_dir: build/web
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
