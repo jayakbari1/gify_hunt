@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:html' as html;
 import 'dart:math';
+import 'package:web/web.dart' as web;
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -144,8 +144,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 width: 450,
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(
-                    0.95,
+                  color: Colors.white.withValues(
+                    alpha: 0.95,
                   ), // Slight transparency to blend with GIF
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.black, width: 2),
@@ -201,7 +201,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             ElevatedButton(
                               onPressed: () {
                                 autoCloseTimer?.cancel();
-                                html.window.open(startup.websiteUrl, '_blank');
+                                web.window.open(startup.websiteUrl, '_blank');
                                 Navigator.of(context).pop();
                                 _resetTimer(); // Reset timer when user takes action
                               },
@@ -387,7 +387,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 context,
                 MaterialPageRoute(builder: (_) => const AddStartupScreen()),
               ),
-              backgroundColor: Colors.cyan.withOpacity(0.9),
+              backgroundColor: Colors.cyan.withValues(alpha: 0.9),
               foregroundColor: Colors.white,
               elevation: 8,
               extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -457,7 +457,7 @@ class _GifContainerState extends State<GifContainer>
     return Tooltip(
       message: widget.name,
       child: GestureDetector(
-        onTap: () => html.window.open(widget.websiteUrl, '_blank'),
+        onTap: () => web.window.open(widget.websiteUrl, '_blank'),
         child: MouseRegion(
           onEnter: (_) {
             _animationController.forward();
@@ -476,12 +476,12 @@ class _GifContainerState extends State<GifContainer>
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       width: 0.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 4,
                         offset: const Offset(2, 2),
                       ),
@@ -517,7 +517,7 @@ class _GifContainerState extends State<GifContainer>
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.cyan.withOpacity(0.5),
+                    Colors.cyan.withValues(alpha: 0.5),
                   ),
                 ),
               ),
@@ -541,7 +541,7 @@ class _GifContainerState extends State<GifContainer>
 
   Widget _buildErrorWidget() {
     return Container(
-      color: Colors.grey.withOpacity(0.3),
+      color: Colors.grey.withValues(alpha: 0.3),
       child: Center(
         child: Text(
           'GIF ${widget.index + 1}',

@@ -46,6 +46,7 @@ dependencies:
   cloud_firestore_web: ^3.7.0
   fluttertoast: ^8.2.4
   js: ^0.7.0
+  web: ^1.0.0
 
 dev_dependencies:
   flutter_test:

@@ -11,14 +11,14 @@ class GifUploadWidget extends StatefulWidget {
   final String? validationMessage;
 
   const GifUploadWidget({
-    Key? key,
+    super.key,
     required this.selectedFileBytes,
     required this.selectedFileName,
     required this.onFileSelected,
     this.title = 'Upload Your GIF *',
     this.subtitle = 'Upload a 88x31 pixel GIF to represent your startup',
     this.validationMessage,
-  }) : super(key: key);
+  });
 
   @override
   State<GifUploadWidget> createState() => _GifUploadWidgetState();
@@ -44,7 +44,7 @@ class _GifUploadWidgetState extends State<GifUploadWidget> {
         Text(
           widget.subtitle,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             fontSize: 14,
           ),
         ),
@@ -60,11 +60,11 @@ class _GifUploadWidgetState extends State<GifUploadWidget> {
               border: Border.all(
                 color: widget.selectedFileBytes != null 
                     ? Colors.green 
-                    : Colors.white.withOpacity(0.3),
+                    : Colors.white.withValues(alpha: 0.3),
                 width: 2,
               ),
               borderRadius: BorderRadius.circular(12),
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
             ),
             child: widget.selectedFileBytes != null 
                 ? _buildSelectedGifPreview() 
@@ -79,7 +79,7 @@ class _GifUploadWidgetState extends State<GifUploadWidget> {
             child: Text(
               widget.validationMessage!,
               style: TextStyle(
-                color: Colors.red.withOpacity(0.8),
+                color: Colors.red.withValues(alpha: 0.8),
                 fontSize: 12,
               ),
             ),
@@ -134,7 +134,7 @@ class _GifUploadWidgetState extends State<GifUploadWidget> {
           child: Text(
             'Tap to change',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 12,
               decoration: TextDecoration.underline,
             ),
@@ -151,13 +151,13 @@ class _GifUploadWidgetState extends State<GifUploadWidget> {
         Icon(
           Icons.cloud_upload_outlined,
           size: 40,
-          color: Colors.white.withOpacity(0.6),
+          color: Colors.white.withValues(alpha: 0.6),
         ),
         const SizedBox(height: 8),
         Text(
           'Tap to upload GIF',
           style: TextStyle(
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
             fontSize: 16,
             fontWeight: FontWeight.w500,
           ),
@@ -166,7 +166,7 @@ class _GifUploadWidgetState extends State<GifUploadWidget> {
         Text(
           'Recommended: 88x31 pixels',
           style: TextStyle(
-            color: Colors.white.withOpacity(0.6),
+            color: Colors.white.withValues(alpha: 0.6),
             fontSize: 12,
           ),
         ),

@@ -94,7 +94,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.cyan.withOpacity(_glowAnimation.value),
+                      color: Colors.cyan.withValues(alpha: _glowAnimation.value),
                       blurRadius: 8,
                       spreadRadius: 2,
                     ),
@@ -139,8 +139,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.black.withOpacity(0.85),
-              Colors.black.withOpacity(0.95),
+              Colors.black.withValues(alpha: 0.85),
+              Colors.black.withValues(alpha: 0.95),
             ],
           ),
         ),
@@ -178,7 +178,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.cyan.withOpacity(0.3),
+                color: Colors.cyan.withValues(alpha: 0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -211,7 +211,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         Text(
           'Initialize your startup into the 88x31 matrix grid system',
           style: TextStyle(
-            color: Colors.cyan.withOpacity(0.8),
+            color: Colors.cyan.withValues(alpha: 0.8),
             fontSize: 16,
             letterSpacing: 1,
           ),
@@ -224,18 +224,18 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.cyan.withOpacity(0.3), width: 1),
+        border: Border.all(color: Colors.cyan.withValues(alpha: 0.3), width: 1),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF1A1A1A).withOpacity(0.8),
-            const Color(0xFF0D1117).withOpacity(0.9),
+            const Color(0xFF1A1A1A).withValues(alpha: 0.8),
+            const Color(0xFF0D1117).withValues(alpha: 0.9),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.cyan.withOpacity(0.1),
+            color: Colors.cyan.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -346,22 +346,22 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withValues(alpha: 0.4),
               letterSpacing: 0.5,
             ),
             filled: true,
-            fillColor: Colors.black.withOpacity(0.3),
+            fillColor: Colors.black.withValues(alpha: 0.3),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: Colors.cyan.withOpacity(0.3),
+                color: Colors.cyan.withValues(alpha: 0.3),
                 width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: Colors.cyan.withOpacity(0.3),
+                color: Colors.cyan.withValues(alpha: 0.3),
                 width: 1,
               ),
             ),
@@ -410,12 +410,12 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: _selectedGifBytes != null
-                  ? Colors.green.withOpacity(0.5)
-                  : Colors.cyan.withOpacity(0.3),
+                  ? Colors.green.withValues(alpha: 0.5)
+                  : Colors.cyan.withValues(alpha: 0.3),
               width: 2,
               style: BorderStyle.solid,
             ),
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
           ),
           child: Material(
             color: Colors.transparent,
@@ -434,7 +434,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                             : Icons.cloud_upload,
                         color: _selectedGifBytes != null
                             ? Colors.green
-                            : Colors.cyan.withOpacity(_glowAnimation.value),
+                            : Colors.cyan.withValues(alpha: _glowAnimation.value),
                         size: 32,
                       );
                     },
@@ -447,7 +447,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                     style: TextStyle(
                       color: _selectedGifBytes != null
                           ? Colors.green
-                          : Colors.cyan.withOpacity(0.8),
+                          : Colors.cyan.withValues(alpha: 0.8),
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1,
@@ -459,7 +459,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                     Text(
                       'Optimal: 88x31 pixels',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.4),
+                        color: Colors.white.withValues(alpha: 0.4),
                         fontSize: 10,
                         letterSpacing: 0.5,
                       ),
@@ -492,20 +492,20 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                     borderRadius: BorderRadius.circular(8),
                   ),
                   side: BorderSide(
-                    color: Colors.cyan.withOpacity(
+                    color: Colors.cyan.withValues(alpha: 
                       _isSubmitting ? 0.3 : _glowAnimation.value,
                     ),
                     width: 2,
                   ),
                 ).copyWith(
-                  backgroundColor: MaterialStateProperty.resolveWith((states) {
-                    if (states.contains(MaterialState.pressed)) {
-                      return Colors.cyan.withOpacity(0.1);
+                  backgroundColor: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.pressed)) {
+                      return Colors.cyan.withValues(alpha: 0.1);
                     }
-                    if (states.contains(MaterialState.hovered)) {
-                      return Colors.cyan.withOpacity(0.05);
+                    if (states.contains(WidgetState.hovered)) {
+                      return Colors.cyan.withValues(alpha: 0.05);
                     }
-                    return Colors.cyan.withOpacity(0.02);
+                    return Colors.cyan.withValues(alpha: 0.02);
                   }),
                 ),
             child: _isSubmitting
@@ -518,7 +518,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.cyan.withOpacity(0.7),
+                            Colors.cyan.withValues(alpha: 0.7),
                           ),
                         ),
                       ),
@@ -552,8 +552,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.yellow.withOpacity(0.3), width: 1),
-        color: Colors.yellow.withOpacity(0.05),
+        border: Border.all(color: Colors.yellow.withValues(alpha: 0.3), width: 1),
+        color: Colors.yellow.withValues(alpha: 0.05),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -562,14 +562,14 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             children: [
               Icon(
                 Icons.info_outline,
-                color: Colors.yellow.withOpacity(0.8),
+                color: Colors.yellow.withValues(alpha: 0.8),
                 size: 16,
               ),
               const SizedBox(width: 8),
               Text(
                 'SYSTEM REQUIREMENTS',
                 style: TextStyle(
-                  color: Colors.yellow.withOpacity(0.9),
+                  color: Colors.yellow.withValues(alpha: 0.9),
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
@@ -590,7 +590,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
               child: Text(
                 guideline,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 11,
                   letterSpacing: 0.3,
                 ),
@@ -650,15 +650,17 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       ).addStartup(startup);
 
       // On success: Navigate back to home and show toast
-      Navigator.pop(context);
-      Fluttertoast.showToast(
-        msg: "Submission successful!",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      if (mounted) {
+        Navigator.pop(context);
+        Fluttertoast.showToast(
+          msg: "Submission successful!",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
     } catch (e) {
       // On error: Show SnackBar and reset form state
       _showSnackBar('System error: $e', isError: true);
@@ -706,8 +708,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           ],
         ),
         backgroundColor: isError
-            ? Colors.red.withOpacity(0.9)
-            : Colors.green.withOpacity(0.9),
+            ? Colors.red.withValues(alpha: 0.9)
+            : Colors.green.withValues(alpha: 0.9),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         margin: const EdgeInsets.all(16),
@@ -735,7 +737,7 @@ class HeaderWidget extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'Submit your startup to be featured in our 88x31 pixel showcase gallery',
-          style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 16),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 16),
         ),
       ],
     );

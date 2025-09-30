@@ -79,23 +79,23 @@ class CustomTextFormField extends StatelessWidget {
           readOnly: readOnly,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
             prefixIcon:
-                prefixIcon ?? Icon(icon, color: Colors.white.withOpacity(0.7)),
+                prefixIcon ?? Icon(icon, color: Colors.white.withValues(alpha: 0.7)),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: fillColor ?? Colors.black.withOpacity(0.3),
+            fillColor: fillColor ?? Colors.black.withValues(alpha: 0.3),
             contentPadding: contentPadding,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(borderRadius),
               borderSide: BorderSide(
-                color: borderColor ?? Colors.white.withOpacity(0.3),
+                color: borderColor ?? Colors.white.withValues(alpha: 0.3),
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(borderRadius),
               borderSide: BorderSide(
-                color: borderColor ?? Colors.white.withOpacity(0.3),
+                color: borderColor ?? Colors.white.withValues(alpha: 0.3),
               ),
             ),
             focusedBorder: OutlineInputBorder(
