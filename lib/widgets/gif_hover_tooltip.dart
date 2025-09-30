@@ -18,7 +18,7 @@ class GifHoverTooltip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Ensure we always show something, even if gifData is null
-    final displayBusinessName = gifData?.businessName ?? 'Unknown Business #${gridNumber}';
+    final displayBusinessName = gifData?.businessName ?? 'Unknown Business #$gridNumber';
     final displayGifName = gifData?.gifName ?? 'Unknown GIF';
     final displayDescription = gifData?.description ?? 'No description available';
     final displayWebsiteUrl = gifData?.websiteUrl;
@@ -53,9 +53,6 @@ class GifHoverTooltip extends StatelessWidget {
       }
     }
 
-    // Determine if we should show left or right aligned
-    bool showLeft = false;
-    
     // Adjust horizontal position
     if (left < margin) {
       // Too far left, align to left edge
@@ -63,12 +60,10 @@ class GifHoverTooltip extends StatelessWidget {
     } else if (left + tooltipWidth > screenSize.width - margin) {
       // Too far right, try showing to the left of cursor
       left = mousePosition.dx - tooltipWidth - 10;
-      showLeft = true;
       
       // If left position still doesn't fit, align to right edge
       if (left < margin) {
         left = screenSize.width - tooltipWidth - margin;
-        showLeft = false;
       }
     }
 

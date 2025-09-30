@@ -442,7 +442,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                   const SizedBox(height: 8),
                   Text(
                     _selectedGifBytes != null
-                        ? 'FILE LOADED: ${_selectedGifFileName}'
+                        ? 'FILE LOADED: $_selectedGifFileName'
                         : 'CLICK TO UPLOAD GIF',
                     style: TextStyle(
                       color: _selectedGifBytes != null

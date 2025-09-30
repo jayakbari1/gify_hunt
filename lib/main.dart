@@ -8,8 +8,8 @@ import 'package:provider/provider.dart';
 
 import '../models/startup.dart';
 import 'config/firebase_options_dev.dart';
-import 'providers/startup_provider.dart';
 import 'constants/str_constants.dart';
+import 'providers/startup_provider.dart';
 import 'screens/add_startup_screen.dart';
 
 void main() async {
@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _startTimer();
+    _resetTimer();
   }
 
   @override
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       _timer?.cancel();
       _timer = null;
     } else if (state == AppLifecycleState.resumed) {
-      _startTimer();
+      _resetTimer();
     }
   }
 
@@ -83,9 +83,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   void _startTimer() {
+    _timer?.cancel(); // Cancel existing timer
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       _showRandomStartupDialog();
     });
+  }
+
+  void _resetTimer() {
+    _timer?.cancel();
+    _startTimer();
   }
 
   void _showRandomStartupDialog() {
@@ -105,13 +111,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _isDialogShowing = true;
     _dialogCount++;
 
+    Timer? autoCloseTimer;
+
     showDialog(
       context: context,
-      barrierDismissible: false, // Prevent dismiss by tapping outside
+      barrierDismissible: true, // Allow dismiss by tapping outside
       builder: (BuildContext context) {
         // Auto close after 10 seconds
-        Timer(const Duration(seconds: 10), () {
-          if (Navigator.of(context).canPop()) {
+        autoCloseTimer = Timer(const Duration(seconds: 10), () {
+          if (mounted && Navigator.of(context).canPop()) {
             Navigator.of(context).pop();
           }
         });
@@ -136,7 +144,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 width: 450,
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.95), // Slight transparency to blend with GIF
+                  color: Colors.white.withOpacity(
+                    0.95,
+                  ), // Slight transparency to blend with GIF
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.black, width: 2),
                 ),
@@ -190,13 +200,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           children: [
                             ElevatedButton(
                               onPressed: () {
+                                autoCloseTimer?.cancel();
                                 html.window.open(startup.websiteUrl, '_blank');
                                 Navigator.of(context).pop();
+                                _resetTimer(); // Reset timer when user takes action
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black,
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(4),
                                 ),
@@ -210,11 +225,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: () => Navigator.of(context).pop(),
+                              onPressed: () {
+                                autoCloseTimer?.cancel();
+                                Navigator.of(context).pop();
+                                _resetTimer(); // Reset timer when user takes action
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.grey,
                                 foregroundColor: Colors.black,
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(4),
                                 ),
@@ -235,8 +257,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       top: 10,
                       right: 10,
                       child: IconButton(
-                        icon: const Icon(Icons.close, color: Colors.black, size: 28),
-                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.black,
+                          size: 28,
+                        ),
+                        onPressed: () {
+                          autoCloseTimer?.cancel();
+                          Navigator.of(context).pop();
+                          _resetTimer(); // Reset timer when user closes dialog
+                        },
                       ),
                     ),
                   ],
@@ -247,7 +277,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         );
       },
     ).then((_) {
+      autoCloseTimer?.cancel();
       _isDialogShowing = false;
+      _resetTimer(); // Reset timer when dialog is dismissed by any means
     });
   }
 
