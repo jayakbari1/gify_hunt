@@ -23,10 +23,10 @@ class GuidelinesWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: backgroundColor ?? Colors.deepPurple.withOpacity(0.1),
+        color: backgroundColor ?? Colors.deepPurple.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: borderColor ?? Colors.deepPurple.withOpacity(0.3),
+          color: borderColor ?? Colors.deepPurple.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -47,7 +47,7 @@ class GuidelinesWidget extends StatelessWidget {
               child: Text(
                 guideline,
                 style: TextStyle(
-                  color: (textColor ?? Colors.white).withOpacity(0.8),
+                  color: (textColor ?? Colors.white).withValues(alpha: 0.8),
                   fontSize: 14,
                 ),
               ),

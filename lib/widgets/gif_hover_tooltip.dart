@@ -8,12 +8,12 @@ class GifHoverTooltip extends StatelessWidget {
   final Size screenSize;
 
   const GifHoverTooltip({
-    Key? key,
+    super.key,
     required this.gifData,
     required this.gridNumber,
     required this.mousePosition,
     required this.screenSize,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +73,7 @@ class GifHoverTooltip extends StatelessWidget {
       child: Material(
         elevation: 24,
         borderRadius: BorderRadius.circular(12),
-        shadowColor: Colors.cyan.withOpacity(0.8),
+        shadowColor: Colors.cyan.withValues(alpha: 0.8),
         child: Container(
           width: tooltipWidth,
           padding: const EdgeInsets.all(18),
@@ -88,26 +88,26 @@ class GifHoverTooltip extends StatelessWidget {
               ],
             ),
             border: Border.all(
-              color: Colors.cyan.withOpacity(0.6),
+              color: Colors.cyan.withValues(alpha: 0.6),
               width: 2,
             ),
             boxShadow: [
               // Primary glow effect
               BoxShadow(
-                color: Colors.cyan.withOpacity(0.4),
+                color: Colors.cyan.withValues(alpha: 0.4),
                 blurRadius: 25,
                 spreadRadius: 0,
                 offset: const Offset(0, 8),
               ),
               // Secondary depth shadow
               BoxShadow(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withValues(alpha: 0.8),
                 blurRadius: 20,
                 offset: const Offset(0, 6),
               ),
               // Inner highlight
               BoxShadow(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 blurRadius: 1,
                 spreadRadius: 0,
                 offset: const Offset(0, 1),
@@ -135,7 +135,7 @@ class GifHoverTooltip extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.cyan.withOpacity(0.5),
+                          color: Colors.cyan.withValues(alpha: 0.5),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -172,7 +172,7 @@ class GifHoverTooltip extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.green.withOpacity(0.4),
+                            color: Colors.green.withValues(alpha: 0.4),
                             blurRadius: 6,
                             offset: const Offset(0, 1),
                           ),
@@ -205,7 +205,7 @@ class GifHoverTooltip extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.cyan.withOpacity(0.8),
+                          color: Colors.cyan.withValues(alpha: 0.8),
                           blurRadius: 8,
                           spreadRadius: 2,
                         ),
@@ -290,10 +290,10 @@ class GifHoverTooltip extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.cyan.withOpacity(0.1),
+                    color: Colors.cyan.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                      color: Colors.cyan.withOpacity(0.3),
+                      color: Colors.cyan.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -302,7 +302,7 @@ class GifHoverTooltip extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
-                          color: Colors.cyan.withOpacity(0.2),
+                          color: Colors.cyan.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Icon(
