@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:web/web.dart' as web;
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web/web.dart' as web;
 
 import '../models/startup.dart';
 import 'config/firebase_options_dev.dart';
@@ -51,11 +52,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool _isDialogShowing = false;
   int _dialogCount = 0;
   StartupProvider? _provider;
+  bool _isSpotlightEnabled = true; // New state for spotlight toggle
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _loadSpotlightPreference();
     _resetTimer();
   }
 
@@ -82,7 +85,40 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  // Load spotlight preference from shared preferences
+  void _loadSpotlightPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isSpotlightEnabled = prefs.getBool('spotlight_enabled') ?? true;
+    });
+  }
+
+  // Save spotlight preference to shared preferences
+  void _saveSpotlightPreference(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('spotlight_enabled', value);
+  }
+
+  // Toggle spotlight feature
+  void _toggleSpotlight(bool value) {
+    setState(() {
+      _isSpotlightEnabled = value;
+    });
+    _saveSpotlightPreference(value);
+
+    if (!value) {
+      // Cancel timer when spotlight is disabled
+      _timer?.cancel();
+    } else {
+      // Restart timer when spotlight is enabled
+      _resetTimer();
+    }
+  }
+
   void _startTimer() {
+    if (!_isSpotlightEnabled)
+      return; // Don't start timer if spotlight is disabled
+
     _timer?.cancel(); // Cancel existing timer
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       _showRandomStartupDialog();
@@ -91,7 +127,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   void _resetTimer() {
     _timer?.cancel();
-    _startTimer();
+    if (_isSpotlightEnabled) {
+      _startTimer();
+    }
   }
 
   void _showRandomStartupDialog() {
@@ -170,19 +208,17 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
-                        if (_dialogCount % 2 == 1) ...[
-                          Text(
-                            startup.name,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Courier',
-                            ),
-                            textAlign: TextAlign.center,
+                        Text(
+                          startup.name,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Courier',
                           ),
-                          const SizedBox(height: 12),
-                        ],
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
                         Text(
                           '"${startup.tagline}"',
                           style: const TextStyle(
@@ -315,22 +351,93 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   );
                   return Column(
                     children: [
+                      // Header with title and spotlight toggle
                       Container(
                         padding: const EdgeInsets.all(16.0),
-                        child: const Text(
-                          'Welcome to Gify',
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                offset: Offset(2, 2),
-                                blurRadius: 4,
-                                color: Colors.black45,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Title
+                            const Text(
+                              'Welcome to Gify',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                shadows: [
+                                  Shadow(
+                                    offset: Offset(2, 2),
+                                    blurRadius: 4,
+                                    color: Colors.black45,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                            // Spotlight Toggle
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.7),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.cyan.withValues(alpha: 0.5),
+                                  width: 1,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.cyan.withValues(alpha: 0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.auto_awesome,
+                                    color: _isSpotlightEnabled
+                                        ? Colors.cyan
+                                        : Colors.white.withValues(alpha: 0.5),
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Spotlight',
+                                    style: TextStyle(
+                                      color: _isSpotlightEnabled
+                                          ? Colors.cyan
+                                          : Colors.white.withValues(alpha: 0.7),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Transform.scale(
+                                    scale: 0.8,
+                                    child: Switch(
+                                      value: _isSpotlightEnabled,
+                                      onChanged: _toggleSpotlight,
+                                      activeColor: Colors.cyan,
+                                      activeTrackColor: Colors.cyan.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                      inactiveThumbColor: Colors.white
+                                          .withValues(alpha: 0.7),
+                                      inactiveTrackColor: Colors.white
+                                          .withValues(alpha: 0.2),
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Expanded(
