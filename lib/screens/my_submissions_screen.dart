@@ -14,8 +14,9 @@ class MySubmissionsScreen extends StatelessWidget {
       body: Consumer<StartupProvider>(
         builder: (context, provider, child) {
           final submissions = provider.userSubmissions;
-          if (submissions.isEmpty)
+          if (submissions.isEmpty) {
             return const Center(child: Text(StrConstants.noSubmissionsYet));
+          }
 
           return ListView.builder(
             itemCount: submissions.length,

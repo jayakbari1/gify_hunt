@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-import '../data/comprehensive_dummy_gif_data.dart';
 import '../models/startup.dart';
 import '../services/firebase_service.dart';
 

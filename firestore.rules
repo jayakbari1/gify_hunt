@@ -1,11 +1,40 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /dev_submissions/{document} {
-      allow read, write: if request.auth != null && (request.auth.uid == resource.data.userId || request.auth.token.admin == true);
-    }
-    match /dev_approved_startups/{document} {
+    // Dev submissions collection
+    match /dev_submissions/{submissionId} {
+      // Anyone can read all documents (filtering happens in app)
       allow read: if true;
+      
+      // Anyone can create new submissions (they start as pending)
+      allow create: if request.resource.data.status == 'pending'
+                    && validateSubmission(request.resource.data);
+      
+      // No updates or deletes for now (admin panel would be separate)
+      allow update, delete: if false;
+    }
+    
+    // Production submissions collection
+    match /submissions/{submissionId} {
+      // Anyone can read all documents (filtering happens in app)
+      allow read: if true;
+      
+      // Anyone can create new submissions (they start as pending)
+      allow create: if request.resource.data.status == 'pending'
+                    && validateSubmission(request.resource.data);
+      
+      // No updates or deletes for now (admin panel would be separate)
+      allow update, delete: if false;
+    }
+    
+    // Helper function to validate submission data
+    function validateSubmission(data) {
+      return data.keys().hasAll(['name', 'websiteUrl', 'email', 'tagline', 'gifPath'])
+             && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+             && data.websiteUrl is string && data.websiteUrl.size() > 0 && data.websiteUrl.size() <= 500
+             && data.email is string && data.email.size() > 0 && data.email.size() <= 100
+             && data.tagline is string && data.tagline.size() > 0 && data.tagline.size() <= 200
+             && data.gifPath is string && data.gifPath.size() > 0;
     }
   }
 }
