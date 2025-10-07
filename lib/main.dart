@@ -342,7 +342,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/circuit.gif'),
-                fit: BoxFit.cover,
+                fit: BoxFit.none,
+                alignment: Alignment.center,
+                repeat: ImageRepeat.repeat,
               ),
             ),
             child: SafeArea(
