@@ -12,6 +12,7 @@ import 'config/firebase_options_dev.dart';
 import 'constants/str_constants.dart';
 import 'providers/startup_provider.dart';
 import 'screens/add_startup_screen.dart';
+import '../widgets/cyber_action_button.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -375,67 +376,26 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               ),
                             ),
                             // Spotlight Toggle
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.7),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Colors.cyan.withValues(alpha: 0.5),
-                                  width: 1,
+                            CyberActionButton(
+                              icon: Icons.auto_awesome,
+                              text: 'Spotlight',
+                              isEnabled: _isSpotlightEnabled,
+                              trailingWidget: Transform.scale(
+                                scale: 0.8,
+                                child: Switch(
+                                  value: _isSpotlightEnabled,
+                                  onChanged: _toggleSpotlight,
+                                  activeColor: Colors.cyan,
+                                  activeTrackColor: Colors.cyan.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                  inactiveThumbColor: Colors.white
+                                      .withValues(alpha: 0.7),
+                                  inactiveTrackColor: Colors.white
+                                      .withValues(alpha: 0.2),
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.cyan.withValues(alpha: 0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.auto_awesome,
-                                    color: _isSpotlightEnabled
-                                        ? Colors.cyan
-                                        : Colors.white.withValues(alpha: 0.5),
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Spotlight',
-                                    style: TextStyle(
-                                      color: _isSpotlightEnabled
-                                          ? Colors.cyan
-                                          : Colors.white.withValues(alpha: 0.7),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Transform.scale(
-                                    scale: 0.8,
-                                    child: Switch(
-                                      value: _isSpotlightEnabled,
-                                      onChanged: _toggleSpotlight,
-                                      activeColor: Colors.cyan,
-                                      activeTrackColor: Colors.cyan.withValues(
-                                        alpha: 0.3,
-                                      ),
-                                      inactiveThumbColor: Colors.white
-                                          .withValues(alpha: 0.7),
-                                      inactiveTrackColor: Colors.white
-                                          .withValues(alpha: 0.2),
-                                      materialTapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                  ),
-                                ],
                               ),
                             ),
                           ],
@@ -490,22 +450,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            FloatingActionButton.extended(
+            CyberActionButton(
+              icon: Icons.add_business,
+              text: 'Add Startup',
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const AddStartupScreen()),
-              ),
-              backgroundColor: Colors.cyan.withValues(alpha: 0.9),
-              foregroundColor: Colors.white,
-              elevation: 8,
-              extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
-              icon: const Icon(Icons.add_business, size: 20),
-              label: const Text(
-                'Add Startup',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                ),
               ),
             ),
           ],
