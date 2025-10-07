@@ -116,8 +116,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   void _startTimer() {
-    if (!_isSpotlightEnabled)
+    if (!_isSpotlightEnabled) {
       return; // Don't start timer if spotlight is disabled
+    }
 
     _timer?.cancel(); // Cancel existing timer
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {

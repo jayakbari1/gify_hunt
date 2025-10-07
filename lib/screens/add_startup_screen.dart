@@ -443,7 +443,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                   Text(
                     _selectedGifBytes != null
                         ? 'FILE LOADED: $_selectedGifFileName'
-                        : 'CLICK TO UPLOAD GIF',
+                        : 'CLICK TO UPLOAD GIF FILE',
                     style: TextStyle(
                       color: _selectedGifBytes != null
                           ? Colors.green
@@ -457,7 +457,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                   if (_selectedGifBytes == null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      'Optimal: 88x31 pixels',
+                      'Only .gif files accepted • Content validation enabled',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.4),
                         fontSize: 10,
@@ -579,6 +579,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           ),
           const SizedBox(height: 12),
           ...const [
+            '• File format: GIF only (.gif extension + valid GIF content required)',
             '• GIF dimensions: 88x31 pixels (optimal)',
             '• File size limit: 2MB maximum',
             '• Network address must be accessible',
@@ -606,11 +607,39 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
+      // Validate file extension
+      final extensionError = Validators.gifFile(image.name);
+      if (extensionError != null) {
+        _showSnackBar(extensionError, isError: true);
+        return;
+      }
+
       final bytes = await image.readAsBytes();
+
+      // Validate file content (magic bytes)
+      final contentError = Validators.gifContent(bytes);
+      if (contentError != null) {
+        _showSnackBar(contentError, isError: true);
+        return;
+      }
+
+      // Validate file size (2MB limit)
+      final sizeError = Validators.fileSize(bytes.length, 2);
+      if (sizeError != null) {
+        _showSnackBar(sizeError, isError: true);
+        return;
+      }
+
+      // Optional: Validate dimensions (if we can determine them)
+      // For now, we'll skip dimension validation as it requires additional packages
+      // and the guidelines already mention the optimal dimensions
+
       setState(() {
         _selectedGifBytes = bytes;
         _selectedGifFileName = image.name;
       });
+
+      _showSnackBar('GIF file uploaded successfully!', isError: false);
     }
   }
 
