@@ -28,6 +28,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
   Uint8List? _selectedGifBytes;
   String? _selectedGifFileName;
   bool _isSubmitting = false;
+  bool _gifValidationError = false;
 
   late AnimationController _fadeController;
   late AnimationController _glowController;
@@ -409,9 +410,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: _selectedGifBytes != null
-                  ? Colors.green.withValues(alpha: 0.5)
-                  : Colors.cyan.withValues(alpha: 0.3),
+              color: _gifValidationError
+                  ? Colors.red
+                  : _selectedGifBytes != null
+                      ? Colors.green.withValues(alpha: 0.5)
+                      : Colors.cyan.withValues(alpha: 0.3),
               width: 2,
               style: BorderStyle.solid,
             ),
@@ -470,6 +473,17 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             ),
           ),
         ),
+        if (_gifValidationError) ...[
+          const SizedBox(height: 8),
+          const Text(
+            'Please upload a GIF file',
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -637,6 +651,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       setState(() {
         _selectedGifBytes = bytes;
         _selectedGifFileName = image.name;
+        _gifValidationError = false; // Clear validation error when GIF is selected
       });
 
       _showSnackBar('GIF file uploaded successfully!', isError: false);
@@ -644,12 +659,18 @@ class _AddStartupScreenState extends State<AddStartupScreen>
   }
 
   Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    if (_selectedGifBytes == null) {
-      _showSnackBar('Please upload a GIF file', isError: true);
+    // First validate the form fields
+    final isFormValid = _formKey.currentState!.validate();
+    
+    // Check if GIF is uploaded
+    final isGifValid = _selectedGifBytes != null;
+    
+    // Update validation error state
+    setState(() {
+      _gifValidationError = !isGifValid;
+    });
+    
+    if (!isFormValid || !isGifValid) {
       return;
     }
 
@@ -710,6 +731,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     setState(() {
       _selectedGifBytes = null;
       _selectedGifFileName = null;
+      _gifValidationError = false;
     });
   }
 

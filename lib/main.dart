@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web/web.dart' as web;
 
 import '../models/startup.dart';
@@ -13,6 +12,7 @@ import 'constants/str_constants.dart';
 import 'providers/startup_provider.dart';
 import 'screens/add_startup_screen.dart';
 import '../widgets/cyber_action_button.dart';
+import 'utils/validators.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,7 +59,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _loadSpotlightPreference();
     _resetTimer();
   }
 
@@ -86,26 +85,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  // Load spotlight preference from shared preferences
-  void _loadSpotlightPreference() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _isSpotlightEnabled = prefs.getBool('spotlight_enabled') ?? true;
-    });
-  }
-
-  // Save spotlight preference to shared preferences
-  void _saveSpotlightPreference(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('spotlight_enabled', value);
-  }
-
   // Toggle spotlight feature
   void _toggleSpotlight(bool value) {
     setState(() {
       _isSpotlightEnabled = value;
     });
-    _saveSpotlightPreference(value);
 
     if (!value) {
       // Cancel timer when spotlight is disabled
@@ -239,7 +223,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             ElevatedButton(
                               onPressed: () {
                                 autoCloseTimer?.cancel();
-                                web.window.open(startup.websiteUrl, '_blank');
+                                web.window.open(Validators.normalizeUrl(startup.websiteUrl), '_blank');
                                 Navigator.of(context).pop();
                                 _resetTimer(); // Reset timer when user takes action
                               },
@@ -322,7 +306,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   int _calculateCrossAxisCount(double screenWidth) {
-    const double containerWidth = 88.0;
+    const double containerWidth = 40.0;
     const double spacing = 8.0;
     const double padding = 16.0;
     double availableWidth = screenWidth - (padding * 2);
@@ -421,7 +405,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                       crossAxisCount: crossAxisCount,
                                       crossAxisSpacing: 8.0,
                                       mainAxisSpacing: 8.0,
-                                      childAspectRatio: 88 / 31,
+                                      childAspectRatio: 40 / 80,
                                     ),
                                 itemCount: approvedStartups.length,
                                 itemBuilder: (context, index) {
@@ -517,7 +501,7 @@ class _GifContainerState extends State<GifContainer>
     return Tooltip(
       message: widget.name,
       child: GestureDetector(
-        onTap: () => web.window.open(widget.websiteUrl, '_blank'),
+        onTap: () => web.window.open(Validators.normalizeUrl(widget.websiteUrl), '_blank'),
         child: MouseRegion(
           onEnter: (_) {
             _animationController.forward();
@@ -530,27 +514,10 @@ class _GifContainerState extends State<GifContainer>
             builder: (context, child) {
               return Transform.scale(
                 scale: _scaleAnimation.value,
-                child: Container(
-                  width: 88,
-                  height: 31,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      width: 0.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        blurRadius: 4,
-                        offset: const Offset(2, 2),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: _buildImage(),
-                  ),
+                child: SizedBox(
+                  width: 40,
+                  height: 80,
+                  child: _buildImage(),
                 ),
               );
             },
@@ -565,7 +532,7 @@ class _GifContainerState extends State<GifContainer>
       final dataUrl = 'data:image/gif;base64,${widget.gifPath}';
       return Image.network(
         dataUrl,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
           return Container(
@@ -591,7 +558,7 @@ class _GifContainerState extends State<GifContainer>
     } else {
       return Image.asset(
         widget.gifPath,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
           return _buildErrorWidget();
         },
@@ -600,18 +567,6 @@ class _GifContainerState extends State<GifContainer>
   }
 
   Widget _buildErrorWidget() {
-    return Container(
-      color: Colors.grey.withValues(alpha: 0.3),
-      child: Center(
-        child: Text(
-          'GIF ${widget.index + 1}',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
+    return Container(); // Empty container - no background or error display
   }
 }
