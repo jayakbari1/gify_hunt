@@ -12,6 +12,7 @@ import 'constants/str_constants.dart';
 import 'providers/startup_provider.dart';
 import 'screens/add_startup_screen.dart';
 import '../widgets/cyber_action_button.dart';
+import '../widgets/animated_rotating_title.dart';
 import 'utils/validators.dart';
 import 'theme/app_theme.dart';
 import 'theme/app_colors.dart';
@@ -331,30 +332,46 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // Title
-                            Text(
-                              'Welcome to Gify',
-                              style: AppTextStyles.displayLarge,
-                            ),
-                            // Spotlight Toggle
-                            CyberActionButton(
-                              icon: Icons.auto_awesome,
-                              text: 'Spotlight',
-                              isEnabled: _isSpotlightEnabled,
-                              trailingWidget: Transform.scale(
-                                scale: 0.8,
-                                child: Switch(
-                                  value: _isSpotlightEnabled,
-                                  onChanged: _toggleSpotlight,
-                                  activeColor: AppColors.primary,
-                                  activeTrackColor: AppColors.primaryWithOpacity(0.3),
-                                  inactiveThumbColor: AppColors.textPrimaryWithOpacity(0.7),
-                                  inactiveTrackColor: AppColors.textPrimaryWithOpacity(0.2),
-                                  materialTapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
+                            // Centered rotating hero title for better first impression
+                            Expanded(
+                              child: Center(
+                                child: AnimatedRotatingTitle(
+                                  titles: const [
+                                    'Gify — Micro Banner Marketplace',
+                                    'Showcase 88×31 GIFs • Curated & Fast',
+                                    'Micro-ads that drive attention',
+                                  ],
+                                  interval: Duration(seconds: 10),
+                                  textStyle: AppTextStyles.displayLarge,
                                 ),
                               ),
                             ),
+                            // Spotlight Toggle (responsive)
+                            LayoutBuilder(builder: (context, constraints) {
+                              final isNarrow = constraints.maxWidth < 360;
+                              return CyberActionButton(
+                                icon: Icons.auto_awesome,
+                                text: isNarrow ? '' : 'Spotlight',
+                                isEnabled: _isSpotlightEnabled,
+                                compact: isNarrow,
+                                trailingWidget: Transform.scale(
+                                  scale: isNarrow ? 0.7 : 0.85,
+                                  child: Switch(
+                                    value: _isSpotlightEnabled,
+                                    onChanged: _toggleSpotlight,
+                                    activeColor: AppColors.primary,
+                                    activeTrackColor:
+                                        AppColors.primaryWithOpacity(0.3),
+                                    inactiveThumbColor:
+                                        AppColors.textPrimaryWithOpacity(0.7),
+                                    inactiveTrackColor:
+                                        AppColors.textPrimaryWithOpacity(0.2),
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                ),
+                              );
+                            }),
                           ],
                         ),
                       ),

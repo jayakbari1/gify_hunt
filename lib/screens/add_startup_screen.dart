@@ -11,6 +11,7 @@ import '../providers/startup_provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../utils/validators.dart';
+import '../widgets/animated_rotating_title.dart';
 
 class AddStartupScreen extends StatefulWidget {
   const AddStartupScreen({super.key});
@@ -203,10 +204,17 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          'Initialize your startup into the 88x31 matrix grid system',
-          style: AppTextStyles.bodyLarge.copyWith(
-            color: AppColors.primaryWithOpacity(0.8),
+        // Animated rotating descriptive titles (one-by-one every 10 seconds)
+        AnimatedRotatingTitle(
+          titles: const [
+            'Initialize your startup into the 88x31 matrix grid system',
+            'Get featured in the micro-banner showcase (88×31)',
+            'Fast approval • Minimal friction • Global reach',
+            'Professional creatives • Curated gallery • High visibility',
+          ],
+          interval: const Duration(seconds: 10),
+          textStyle: AppTextStyles.bodyLarge.copyWith(
+            color: AppColors.primaryWithOpacity(0.9),
             letterSpacing: 1,
           ),
         ),

@@ -10,6 +10,7 @@ class CyberActionButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isEnabled;
   final Widget? trailingWidget; // For switches or other trailing elements
+  final bool compact; // reduce padding and hide text when true
 
   const CyberActionButton({
     super.key,
@@ -18,15 +19,15 @@ class CyberActionButton extends StatelessWidget {
     this.onPressed,
     this.isEnabled = true,
     this.trailingWidget,
+    this.compact = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 6,
-      ),
+      padding: compact
+          ? const EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+          : const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: AppColors.backgroundWithOpacity(0.7),
         borderRadius: BorderRadius.circular(4),
@@ -55,19 +56,21 @@ class CyberActionButton extends StatelessWidget {
                 color: isEnabled
                     ? AppColors.primary
                     : AppColors.textPrimaryWithOpacity(0.5),
-                size: 18,
+                size: compact ? 16 : 18,
               ),
-              const SizedBox(width: 8),
-              Text(
-                text,
-                style: AppTextStyles.labelMedium.copyWith(
-                  color: isEnabled
-                      ? AppColors.primary
-                      : AppColors.textPrimaryWithOpacity(0.7),
-                ),
-              ),
-              if (trailingWidget != null) ...[
+              if (!compact) ...[
                 const SizedBox(width: 8),
+                Text(
+                  text,
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: isEnabled
+                        ? AppColors.primary
+                        : AppColors.textPrimaryWithOpacity(0.7),
+                  ),
+                ),
+              ],
+              if (trailingWidget != null) ...[
+                SizedBox(width: compact ? 6 : 8),
                 trailingWidget!,
               ],
             ],
