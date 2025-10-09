@@ -1,13 +1,15 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../models/startup.dart';
 import '../providers/startup_provider.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
 import '../utils/validators.dart';
 
 class AddStartupScreen extends StatefulWidget {
@@ -74,7 +76,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: AppColors.background,
       appBar: _buildAppBar(),
       body: _buildBody(),
     );
@@ -91,11 +93,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                 width: 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: Colors.cyan,
+                  color: AppColors.primary,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.cyan.withValues(alpha: _glowAnimation.value),
+                      color: AppColors.primaryWithOpacity(_glowAnimation.value),
                       blurRadius: 8,
                       spreadRadius: 2,
                     ),
@@ -105,22 +107,18 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             },
           ),
           const SizedBox(width: 12),
-          const Text(
+          Text(
             'STARTUP SUBMISSION',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2,
-            ),
+            style: AppTextStyles.titleLarge.copyWith(letterSpacing: 2),
           ),
         ],
       ),
-      backgroundColor: const Color(0xFF1A1A1A),
-      foregroundColor: Colors.cyan,
+      backgroundColor: AppColors.surface,
+      foregroundColor: AppColors.primary,
       elevation: 0,
       centerTitle: false,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.cyan),
+        icon: Icon(Icons.arrow_back_ios_new, color: AppColors.primary),
         onPressed: () => Navigator.pop(context),
       ),
     );
@@ -140,8 +138,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.black.withValues(alpha: 0.85),
-              Colors.black.withValues(alpha: 0.95),
+              AppColors.backgroundWithOpacity(0.85),
+              AppColors.backgroundWithOpacity(0.95),
             ],
           ),
         ),
@@ -175,45 +173,40 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(colors: [Colors.cyan, Colors.blue]),
+            gradient: LinearGradient(colors: [AppColors.primary, Colors.blue]),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.cyan.withValues(alpha: 0.3),
+                color: AppColors.primaryWithOpacity(0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
             ],
           ),
-          child: const Text(
+          child: Text(
             'SYSTEM UPLOAD',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.5,
-            ),
+            style: AppTextStyles.labelMedium.copyWith(letterSpacing: 1.5),
           ),
         ),
         const SizedBox(height: 16),
-        const Text(
+        Text(
           'STARTUP DEPLOYMENT',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
+          style: AppTextStyles.displayMedium.copyWith(
             letterSpacing: 3,
             shadows: [
-              Shadow(color: Colors.cyan, blurRadius: 4, offset: Offset(0, 2)),
+              Shadow(
+                color: AppColors.primary,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
             ],
           ),
         ),
         const SizedBox(height: 8),
         Text(
           'Initialize your startup into the 88x31 matrix grid system',
-          style: TextStyle(
-            color: Colors.cyan.withValues(alpha: 0.8),
-            fontSize: 16,
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: AppColors.primaryWithOpacity(0.8),
             letterSpacing: 1,
           ),
         ),
@@ -225,18 +218,18 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.cyan.withValues(alpha: 0.3), width: 1),
+        border: Border.all(color: AppColors.primaryWithOpacity(0.3), width: 1),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF1A1A1A).withValues(alpha: 0.8),
+            AppColors.surfaceWithOpacity(0.8),
             const Color(0xFF0D1117).withValues(alpha: 0.9),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.cyan.withValues(alpha: 0.1),
+            color: AppColors.primaryWithOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -321,16 +314,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       children: [
         Row(
           children: [
-            Icon(icon, color: Colors.cyan, size: 16),
+            Icon(icon, color: AppColors.primary, size: 16),
             const SizedBox(width: 8),
             Text(
               label,
-              style: const TextStyle(
-                color: Colors.cyan,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-              ),
+              style: AppTextStyles.labelMedium.copyWith(letterSpacing: 1.2),
             ),
           ],
         ),
@@ -339,40 +327,36 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           controller: controller,
           validator: validator,
           keyboardType: keyboardType,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            letterSpacing: 0.5,
-          ),
+          style: AppTextStyles.bodyLarge.copyWith(letterSpacing: 0.5),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(
-              color: Colors.white.withValues(alpha: 0.4),
+            hintStyle: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.textMuted,
               letterSpacing: 0.5,
             ),
             filled: true,
-            fillColor: Colors.black.withValues(alpha: 0.3),
+            fillColor: AppColors.backgroundWithOpacity(0.3),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: Colors.cyan.withValues(alpha: 0.3),
+                color: AppColors.primaryWithOpacity(0.3),
                 width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: Colors.cyan.withValues(alpha: 0.3),
+                color: AppColors.primaryWithOpacity(0.3),
                 width: 1,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.cyan, width: 2),
+              borderSide: BorderSide(color: AppColors.primary, width: 2),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.red, width: 1),
+              borderSide: BorderSide(color: AppColors.error, width: 1),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -390,16 +374,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       children: [
         Row(
           children: [
-            const Icon(Icons.file_upload, color: Colors.cyan, size: 16),
+            Icon(Icons.file_upload, color: AppColors.primary, size: 16),
             const SizedBox(width: 8),
-            const Text(
+            Text(
               'VISUAL ASSET UPLOAD',
-              style: TextStyle(
-                color: Colors.cyan,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
-              ),
+              style: AppTextStyles.labelMedium.copyWith(letterSpacing: 1.2),
             ),
           ],
         ),
@@ -411,14 +390,14 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: _gifValidationError
-                  ? Colors.red
+                  ? AppColors.error
                   : _selectedGifBytes != null
-                      ? Colors.green.withValues(alpha: 0.5)
-                      : Colors.cyan.withValues(alpha: 0.3),
+                  ? AppColors.successWithOpacity(0.5)
+                  : AppColors.primaryWithOpacity(0.3),
               width: 2,
               style: BorderStyle.solid,
             ),
-            color: Colors.black.withValues(alpha: 0.2),
+            color: AppColors.backgroundWithOpacity(0.2),
           ),
           child: Material(
             color: Colors.transparent,
@@ -436,8 +415,10 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                             ? Icons.check_circle
                             : Icons.cloud_upload,
                         color: _selectedGifBytes != null
-                            ? Colors.green
-                            : Colors.cyan.withValues(alpha: _glowAnimation.value),
+                            ? AppColors.success
+                            : AppColors.primaryWithOpacity(
+                                _glowAnimation.value,
+                              ),
                         size: 32,
                       );
                     },
@@ -447,10 +428,10 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                     _selectedGifBytes != null
                         ? 'FILE LOADED: $_selectedGifFileName'
                         : 'CLICK TO UPLOAD GIF FILE',
-                    style: TextStyle(
+                    style: AppTextStyles.titleSmall.copyWith(
                       color: _selectedGifBytes != null
-                          ? Colors.green
-                          : Colors.cyan.withValues(alpha: 0.8),
+                          ? AppColors.success
+                          : AppColors.primaryWithOpacity(0.8),
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1,
@@ -460,9 +441,9 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                   if (_selectedGifBytes == null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      'Only .gif files accepted • Content validation enabled',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.4),
+                      'Only .gif files accepted',
+                      style: AppTextStyles.labelSmall.copyWith(
+                        color: AppColors.textSecondaryWithOpacity(0.4),
                         fontSize: 10,
                         letterSpacing: 0.5,
                       ),
@@ -478,7 +459,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           const Text(
             'Please upload a GIF file',
             style: TextStyle(
-              color: Colors.red,
+              color: AppColors.error,
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
@@ -500,13 +481,13 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             style:
                 ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.textPrimary,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   side: BorderSide(
-                    color: Colors.cyan.withValues(alpha: 
+                    color: AppColors.primaryWithOpacity(
                       _isSubmitting ? 0.3 : _glowAnimation.value,
                     ),
                     width: 2,
@@ -514,12 +495,12 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                 ).copyWith(
                   backgroundColor: WidgetStateProperty.resolveWith((states) {
                     if (states.contains(WidgetState.pressed)) {
-                      return Colors.cyan.withValues(alpha: 0.1);
+                      return AppColors.primaryWithOpacity(0.1);
                     }
                     if (states.contains(WidgetState.hovered)) {
-                      return Colors.cyan.withValues(alpha: 0.05);
+                      return AppColors.primaryWithOpacity(0.05);
                     }
-                    return Colors.cyan.withValues(alpha: 0.02);
+                    return AppColors.primaryWithOpacity(0.02);
                   }),
                 ),
             child: _isSubmitting
@@ -532,26 +513,22 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.cyan.withValues(alpha: 0.7),
+                            AppColors.primaryWithOpacity(0.7),
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
-                      const Text(
+                      Text(
                         'DEPLOYING...',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                        style: AppTextStyles.labelLarge.copyWith(
                           letterSpacing: 1.5,
                         ),
                       ),
                     ],
                   )
-                : const Text(
+                : Text(
                     'DEPLOY STARTUP',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                    style: AppTextStyles.labelLarge.copyWith(
                       letterSpacing: 1.5,
                     ),
                   ),
@@ -566,8 +543,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.yellow.withValues(alpha: 0.3), width: 1),
-        color: Colors.yellow.withValues(alpha: 0.05),
+        border: Border.all(color: AppColors.warningWithOpacity(0.3), width: 1),
+        color: AppColors.warningWithOpacity(0.05),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -576,16 +553,14 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             children: [
               Icon(
                 Icons.info_outline,
-                color: Colors.yellow.withValues(alpha: 0.8),
+                color: AppColors.warningWithOpacity(0.8),
                 size: 16,
               ),
               const SizedBox(width: 8),
               Text(
                 'SYSTEM REQUIREMENTS',
-                style: TextStyle(
-                  color: Colors.yellow.withValues(alpha: 0.9),
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+                style: AppTextStyles.labelSmall.copyWith(
+                  color: AppColors.warningWithOpacity(0.9),
                   letterSpacing: 1.2,
                 ),
               ),
@@ -604,9 +579,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
               padding: const EdgeInsets.only(bottom: 4),
               child: Text(
                 guideline,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
-                  fontSize: 11,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondaryWithOpacity(0.7),
                   letterSpacing: 0.3,
                 ),
               ),
@@ -651,7 +625,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       setState(() {
         _selectedGifBytes = bytes;
         _selectedGifFileName = image.name;
-        _gifValidationError = false; // Clear validation error when GIF is selected
+        _gifValidationError =
+            false; // Clear validation error when GIF is selected
       });
 
       _showSnackBar('GIF file uploaded successfully!', isError: false);
@@ -661,15 +636,15 @@ class _AddStartupScreenState extends State<AddStartupScreen>
   Future<void> _submitForm() async {
     // First validate the form fields
     final isFormValid = _formKey.currentState!.validate();
-    
+
     // Check if GIF is uploaded
     final isGifValid = _selectedGifBytes != null;
-    
+
     // Update validation error state
     setState(() {
       _gifValidationError = !isGifValid;
     });
-    
+
     if (!isFormValid || !isGifValid) {
       return;
     }
@@ -706,8 +681,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           msg: "Submission successful!",
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
+          backgroundColor: AppColors.success,
+          textColor: AppColors.textPrimary,
           fontSize: 16.0,
         );
       }
@@ -742,15 +717,14 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           children: [
             Icon(
               isError ? Icons.error_outline : Icons.check_circle_outline,
-              color: Colors.white,
+              color: AppColors.textPrimary,
               size: 20,
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w500,
                   letterSpacing: 0.5,
                 ),
@@ -759,8 +733,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           ],
         ),
         backgroundColor: isError
-            ? Colors.red.withValues(alpha: 0.9)
-            : Colors.green.withValues(alpha: 0.9),
+            ? AppColors.errorWithOpacity(0.9)
+            : AppColors.successWithOpacity(0.9),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         margin: const EdgeInsets.all(16),
@@ -777,18 +751,18 @@ class HeaderWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Join Our Startup Showcase',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+          style: AppTextStyles.headlineMedium.copyWith(
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           'Submit your startup to be featured in our 88x31 pixel showcase gallery',
-          style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 16),
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: AppColors.textSecondaryWithOpacity(0.8),
+          ),
         ),
       ],
     );

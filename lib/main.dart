@@ -13,6 +13,9 @@ import 'providers/startup_provider.dart';
 import 'screens/add_startup_screen.dart';
 import '../widgets/cyber_action_button.dart';
 import 'utils/validators.dart';
+import 'theme/app_theme.dart';
+import 'theme/app_colors.dart';
+import 'theme/app_text_styles.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,10 +34,7 @@ class MyApp extends StatelessWidget {
       create: (context) => StartupProvider()..loadStartups(),
       child: MaterialApp(
         title: 'Gify',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
+        theme: AppTheme.theme,
         home: const HomePage(),
       ),
     );
@@ -168,11 +168,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 width: 450,
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(
-                    alpha: 0.95,
-                  ), // Slight transparency to blend with GIF
+                  color: AppColors.textPrimary.withValues(alpha: 0.95),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black, width: 2),
+                  border: Border.all(color: AppColors.background, width: 2),
                 ),
                 child: Stack(
                   children: [
@@ -184,34 +182,28 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           _dialogCount % 2 == 1
                               ? StrConstants.startupSpotlight
                               : StrConstants.taglineFlash,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
+                          style: AppTextStyles.headlineMedium.copyWith(
+                            color: AppColors.background,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1,
-                            fontFamily: 'Courier',
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 24),
                         Text(
                           startup.name,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 22,
+                          style: AppTextStyles.titleLarge.copyWith(
+                            color: AppColors.background,
                             fontWeight: FontWeight.bold,
-                            fontFamily: 'Courier',
                           ),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 12),
                         Text(
                           '"${startup.tagline}"',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
+                          style: AppTextStyles.bodyLarge.copyWith(
+                            color: AppColors.background,
                             fontStyle: FontStyle.italic,
-                            fontFamily: 'Courier',
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -228,8 +220,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 _resetTimer(); // Reset timer when user takes action
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                foregroundColor: Colors.white,
+                                backgroundColor: AppColors.background,
+                                foregroundColor: AppColors.textPrimary,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 24,
                                   vertical: 12,
@@ -238,12 +230,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                               ),
-                              child: const Text(
+                              child: Text(
                                 StrConstants.visitSite,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1,
-                                ),
+                                style: AppTextStyles.button,
                               ),
                             ),
                             ElevatedButton(
@@ -254,7 +243,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.grey,
-                                foregroundColor: Colors.black,
+                                foregroundColor: AppColors.background,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 24,
                                   vertical: 12,
@@ -263,12 +252,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                               ),
-                              child: const Text(
+                              child: Text(
                                 StrConstants.cancel,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1,
-                                ),
+                                style: AppTextStyles.button,
                               ),
                             ),
                           ],
@@ -279,9 +265,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       top: 10,
                       right: 10,
                       child: IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.close,
-                          color: Colors.black,
+                          color: AppColors.background,
                           size: 28,
                         ),
                         onPressed: () {
@@ -346,20 +332,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             // Title
-                            const Text(
+                            Text(
                               'Welcome to Gify',
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                shadows: [
-                                  Shadow(
-                                    offset: Offset(2, 2),
-                                    blurRadius: 4,
-                                    color: Colors.black45,
-                                  ),
-                                ],
-                              ),
+                              style: AppTextStyles.displayLarge,
                             ),
                             // Spotlight Toggle
                             CyberActionButton(
@@ -371,14 +346,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 child: Switch(
                                   value: _isSpotlightEnabled,
                                   onChanged: _toggleSpotlight,
-                                  activeColor: Colors.cyan,
-                                  activeTrackColor: Colors.cyan.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                  inactiveThumbColor: Colors.white
-                                      .withValues(alpha: 0.7),
-                                  inactiveTrackColor: Colors.white
-                                      .withValues(alpha: 0.2),
+                                  activeColor: AppColors.primary,
+                                  activeTrackColor: AppColors.primaryWithOpacity(0.3),
+                                  inactiveThumbColor: AppColors.textPrimaryWithOpacity(0.7),
+                                  inactiveTrackColor: AppColors.textPrimaryWithOpacity(0.2),
                                   materialTapTargetSize:
                                       MaterialTapTargetSize.shrinkWrap,
                                 ),
@@ -544,7 +515,7 @@ class _GifContainerState extends State<GifContainer>
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.cyan.withValues(alpha: 0.5),
+                    AppColors.primaryWithOpacity(0.5),
                   ),
                 ),
               ),

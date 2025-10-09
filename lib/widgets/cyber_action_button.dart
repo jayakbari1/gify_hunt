@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
 
 /// A common action button widget with cyber/tech styling
 /// Used for both toggle buttons and action buttons in the app
@@ -26,15 +28,15 @@ class CyberActionButton extends StatelessWidget {
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.7),
+        color: AppColors.backgroundWithOpacity(0.7),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-          color: Colors.cyan.withValues(alpha: 0.5),
+          color: AppColors.primaryWithOpacity(0.5),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.cyan.withValues(alpha: 0.3),
+            color: AppColors.primaryWithOpacity(0.3),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -51,20 +53,17 @@ class CyberActionButton extends StatelessWidget {
               Icon(
                 icon,
                 color: isEnabled
-                    ? Colors.cyan
-                    : Colors.white.withValues(alpha: 0.5),
+                    ? AppColors.primary
+                    : AppColors.textPrimaryWithOpacity(0.5),
                 size: 18,
               ),
               const SizedBox(width: 8),
               Text(
                 text,
-                style: TextStyle(
+                style: AppTextStyles.labelMedium.copyWith(
                   color: isEnabled
-                      ? Colors.cyan
-                      : Colors.white.withValues(alpha: 0.7),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
+                      ? AppColors.primary
+                      : AppColors.textPrimaryWithOpacity(0.7),
                 ),
               ),
               if (trailingWidget != null) ...[
