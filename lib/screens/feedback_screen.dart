@@ -1,37 +1,27 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
+import 'package:web/web.dart' as web;
 
-import '../models/startup.dart';
-import '../providers/startup_provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../utils/validators.dart';
 import '../widgets/animated_rotating_title.dart';
 
-class AddStartupScreen extends StatefulWidget {
-  const AddStartupScreen({super.key});
+class FeedbackScreen extends StatefulWidget {
+  const FeedbackScreen({super.key});
 
   @override
-  State<AddStartupScreen> createState() => _AddStartupScreenState();
+  State<FeedbackScreen> createState() => _FeedbackScreenState();
 }
 
-class _AddStartupScreenState extends State<AddStartupScreen>
+class _FeedbackScreenState extends State<FeedbackScreen>
     with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _urlController = TextEditingController();
   final _emailController = TextEditingController();
-  final _taglineController = TextEditingController();
+  final _featureRequestController = TextEditingController();
 
-  Uint8List? _selectedGifBytes;
-  String? _selectedGifFileName;
   bool _isSubmitting = false;
-  bool _gifValidationError = false;
 
   late AnimationController _fadeController;
   late AnimationController _glowController;
@@ -68,9 +58,8 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     _fadeController.dispose();
     _glowController.dispose();
     _nameController.dispose();
-    _urlController.dispose();
     _emailController.dispose();
-    _taglineController.dispose();
+    _featureRequestController.dispose();
     super.dispose();
   }
 
@@ -109,7 +98,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           ),
           const SizedBox(width: 12),
           Text(
-            'STARTUP SUBMISSION',
+            'FEEDBACK SYSTEM',
             style: AppTextStyles.titleLarge.copyWith(letterSpacing: 2),
           ),
         ],
@@ -187,13 +176,13 @@ class _AddStartupScreenState extends State<AddStartupScreen>
             ],
           ),
           child: Text(
-            'SYSTEM UPLOAD',
+            'USER FEEDBACK',
             style: AppTextStyles.labelMedium.copyWith(letterSpacing: 1.5),
           ),
         ),
         const SizedBox(height: 16),
         Text(
-          'STARTUP DEPLOYMENT',
+          'FEATURE REQUEST PROTOCOL',
           style: AppTextStyles.displayMedium.copyWith(
             letterSpacing: 3,
             shadows: [
@@ -206,13 +195,13 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           ),
         ),
         const SizedBox(height: 8),
-        // Animated rotating descriptive titles (one-by-one every 10 seconds)
+        // Animated rotating descriptive titles
         AnimatedRotatingTitle(
           titles: const [
-            'Initialize your startup into the 88x31 matrix grid system',
-            'Get featured in the micro-banner showcase (88×31)',
-            'Fast approval • Minimal friction • Global reach',
-            'Professional creatives • Curated gallery • High visibility',
+            'Help us improve Gify with your feature suggestions',
+            'Share your ideas for new functionality and enhancements',
+            'Your feedback drives our development roadmap',
+            'Together we build the future of micro-advertising',
           ],
           interval: const Duration(seconds: 10),
           textStyle: AppTextStyles.bodyLarge.copyWith(
@@ -248,15 +237,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          _buildStartupNameField(),
-          const SizedBox(height: 24),
-          _buildWebsiteUrlField(),
+          _buildNameField(),
           const SizedBox(height: 24),
           _buildEmailField(),
           const SizedBox(height: 24),
-          _buildTaglineField(),
-          const SizedBox(height: 24),
-          _buildGifUploadSection(),
+          _buildFeatureRequestField(),
           const SizedBox(height: 32),
           _buildSubmitButton(),
           const SizedBox(height: 24),
@@ -266,27 +251,13 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     );
   }
 
-  Widget _buildStartupNameField() {
+  Widget _buildNameField() {
     return _buildCyberTextField(
       controller: _nameController,
-      label: 'STARTUP IDENTIFIER',
-      hint: 'Enter startup name...',
-      icon: Icons.business_center,
-      validator: Validators.startupName,
-    );
-  }
-
-  Widget _buildWebsiteUrlField() {
-    return _buildCyberTextField(
-      controller: _urlController,
-      label: 'NETWORK ADDRESS',
-      hint: 'https://your-startup.com',
-      icon: Icons.link,
-      keyboardType: TextInputType.url,
-      validator: Validators.combine([
-        (value) => Validators.required(value, fieldName: 'Website URL'),
-        Validators.url,
-      ]),
+      label: 'USER IDENTIFIER',
+      hint: 'Enter your name (optional)...',
+      icon: Icons.person,
+      validator: null, // Optional field
     );
   }
 
@@ -294,20 +265,76 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     return _buildCyberTextField(
       controller: _emailController,
       label: 'CONTACT EMAIL',
-      hint: 'Enter contact email...',
+      hint: 'Enter your email (optional)...',
       icon: Icons.email,
       keyboardType: TextInputType.emailAddress,
-      validator: Validators.email,
+      validator: (value) {
+        if (value != null && value.isNotEmpty) {
+          return Validators.email(value);
+        }
+        return null; // Optional field
+      },
     );
   }
 
-  Widget _buildTaglineField() {
-    return _buildCyberTextField(
-      controller: _taglineController,
-      label: 'TAGLINE',
-      hint: 'Enter startup tagline...',
-      icon: Icons.short_text,
-      validator: Validators.required,
+  Widget _buildFeatureRequestField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.lightbulb, color: AppColors.primary, size: 16),
+            const SizedBox(width: 8),
+            Text(
+              'FEATURE REQUEST',
+              style: AppTextStyles.labelMedium.copyWith(letterSpacing: 1.2),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _featureRequestController,
+          validator: Validators.required,
+          maxLines: 8,
+          minLines: 4,
+          style: AppTextStyles.bodyLarge.copyWith(letterSpacing: 0.5),
+          decoration: InputDecoration(
+            hintText: 'Describe your feature request in detail...',
+            hintStyle: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.textMuted,
+              letterSpacing: 0.5,
+            ),
+            filled: true,
+            fillColor: AppColors.backgroundWithOpacity(0.3),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: AppColors.primaryWithOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: AppColors.primaryWithOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.primary, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.error, width: 1),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -378,107 +405,6 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     );
   }
 
-  Widget _buildGifUploadSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(Icons.file_upload, color: AppColors.primary, size: 16),
-            const SizedBox(width: 8),
-            Text(
-              'VISUAL ASSET UPLOAD',
-              style: AppTextStyles.labelMedium.copyWith(letterSpacing: 1.2),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          height: 120,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: _gifValidationError
-                  ? AppColors.error
-                  : _selectedGifBytes != null
-                  ? AppColors.successWithOpacity(0.5)
-                  : AppColors.primaryWithOpacity(0.3),
-              width: 2,
-              style: BorderStyle.solid,
-            ),
-            color: AppColors.backgroundWithOpacity(0.2),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: _pickGifFile,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnimatedBuilder(
-                    animation: _glowAnimation,
-                    builder: (context, child) {
-                      return Icon(
-                        _selectedGifBytes != null
-                            ? Icons.check_circle
-                            : Icons.cloud_upload,
-                        color: _selectedGifBytes != null
-                            ? AppColors.success
-                            : AppColors.primaryWithOpacity(
-                                _glowAnimation.value,
-                              ),
-                        size: 32,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _selectedGifBytes != null
-                        ? 'FILE LOADED: $_selectedGifFileName'
-                        : 'CLICK TO UPLOAD GIF FILE',
-                    style: AppTextStyles.titleSmall.copyWith(
-                      color: _selectedGifBytes != null
-                          ? AppColors.success
-                          : AppColors.primaryWithOpacity(0.8),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  if (_selectedGifBytes == null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      'Only .gif files accepted',
-                      style: AppTextStyles.labelSmall.copyWith(
-                        color: AppColors.textSecondaryWithOpacity(0.4),
-                        fontSize: 10,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
-        if (_gifValidationError) ...[
-          const SizedBox(height: 8),
-          const Text(
-            'Please upload a GIF file',
-            style: TextStyle(
-              color: AppColors.error,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
   Widget _buildSubmitButton() {
     return SizedBox(
       width: double.infinity,
@@ -487,7 +413,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         animation: _glowAnimation,
         builder: (context, child) {
           return ElevatedButton(
-            onPressed: _isSubmitting ? null : _submitForm,
+            onPressed: _isSubmitting ? null : _submitFeedback,
             style:
                 ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
@@ -529,7 +455,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'DEPLOYING...',
+                        'TRANSMITTING...',
                         style: AppTextStyles.labelLarge.copyWith(
                           letterSpacing: 1.5,
                         ),
@@ -537,7 +463,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
                     ],
                   )
                 : Text(
-                    'DEPLOY STARTUP',
+                    'SUBMIT FEEDBACK',
                     style: AppTextStyles.labelLarge.copyWith(
                       letterSpacing: 1.5,
                     ),
@@ -568,7 +494,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
               ),
               const SizedBox(width: 8),
               Text(
-                'SYSTEM REQUIREMENTS',
+                'FEEDBACK GUIDELINES',
                 style: AppTextStyles.labelSmall.copyWith(
                   color: AppColors.warningWithOpacity(0.9),
                   letterSpacing: 1.2,
@@ -578,12 +504,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           ),
           const SizedBox(height: 12),
           ...const [
-            '• File format: GIF only (.gif extension + valid GIF content required)',
-            '• GIF dimensions: 88x31 pixels (required)',
-            '• File size limit: 2MB maximum',
-            '• Network address must be accessible',
-            '• Content review process: 24-48 hours',
-            '• Professional content only',
+            '• Be specific about the feature you want',
+            '• Include details about how it would work',
+            '• Explain why this feature would be valuable',
+            '• Name and email are optional but help us follow up',
+            '• All feedback is reviewed and considered',
           ].map(
             (guideline) => Padding(
               padding: const EdgeInsets.only(bottom: 4),
@@ -601,74 +526,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     );
   }
 
-  Future<void> _pickGifFile() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      // Validate file extension
-      final extensionError = Validators.gifFile(image.name);
-      if (extensionError != null) {
-        _showSnackBar(extensionError, isError: true);
-        return;
-      }
-
-      final bytes = await image.readAsBytes();
-
-      // Validate file content (magic bytes)
-      final contentError = Validators.gifContent(bytes);
-      if (contentError != null) {
-        _showSnackBar(contentError, isError: true);
-        return;
-      }
-
-      // Validate file size (2MB limit)
-      final sizeError = Validators.fileSize(bytes.length, 2);
-      if (sizeError != null) {
-        _showSnackBar(sizeError, isError: true);
-        return;
-      }
-
-      // Validate dimensions (must be exactly 88x31)
-      if (bytes.length < 10) {
-        _showSnackBar(
-          'Invalid GIF file: unable to read dimensions',
-          isError: true,
-        );
-        return;
-      }
-      final width = bytes[6] + (bytes[7] << 8);
-      final height = bytes[8] + (bytes[9] << 8);
-      if (width != 88 || height != 31) {
-        _showSnackBar(
-          'GIF dimensions must be exactly 88x31 pixels',
-          isError: true,
-        );
-        return;
-      }
-
-      setState(() {
-        _selectedGifBytes = bytes;
-        _selectedGifFileName = image.name;
-        _gifValidationError = false;
-      });
-
-      _showSnackBar('GIF file uploaded successfully!', isError: false);
-    }
-  }
-
-  Future<void> _submitForm() async {
-    // First validate the form fields
+  Future<void> _submitFeedback() async {
+    // Validate the form
     final isFormValid = _formKey.currentState!.validate();
 
-    // Check if GIF is uploaded
-    final isGifValid = _selectedGifBytes != null;
-
-    // Update validation error state
-    setState(() {
-      _gifValidationError = !isGifValid;
-    });
-
-    if (!isFormValid || !isGifValid) {
+    if (!isFormValid) {
       return;
     }
 
@@ -677,31 +539,23 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     });
 
     try {
-      // Convert bytes to base64 for web storage
-      final base64Gif = Startup.bytesToBase64(_selectedGifBytes!);
+      // Prepare feedback data
+      final feedbackData = {
+        'name': _nameController.text.trim(),
+        'email': _emailController.text.trim(),
+        'featureRequest': _featureRequestController.text.trim(),
+        'timestamp': DateTime.now().toIso8601String(),
+        'userAgent': web.window.navigator.userAgent,
+      };
 
-      final startup = Startup(
-        id: const Uuid().v4(),
-        name: _nameController.text.trim(),
-        websiteUrl: _urlController.text.trim(),
-        email: _emailController.text.trim(),
-        tagline: _taglineController.text.trim(),
-        gifPath: base64Gif,
-        gifFileName: _selectedGifFileName,
-        createdAt: DateTime.now(),
-        isUserSubmitted: true,
-      );
+      // Send email using a service (you'll need to implement this)
+      await _sendFeedbackEmail(feedbackData);
 
-      await Provider.of<StartupProvider>(
-        context,
-        listen: false,
-      ).addStartup(startup);
-
-      // On success: Navigate back to home and show toast
+      // On success: Navigate back and show toast
       if (mounted) {
         Navigator.pop(context);
         Fluttertoast.showToast(
-          msg: "Submission successful!",
+          msg: "Feedback submitted successfully!",
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           backgroundColor: AppColors.success,
@@ -710,10 +564,9 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         );
       }
     } catch (e, s) {
-      // On error: Show SnackBar and reset form state
-      _showSnackBar('System error: $e', isError: true);
+      // On error: Show SnackBar
+      _showSnackBar('Failed to submit feedback: $e', isError: true);
       debugPrintStack(stackTrace: s);
-      _resetForm();
     } finally {
       setState(() {
         _isSubmitting = false;
@@ -721,17 +574,31 @@ class _AddStartupScreenState extends State<AddStartupScreen>
     }
   }
 
-  void _resetForm() {
-    _formKey.currentState?.reset();
-    _nameController.clear();
-    _urlController.clear();
-    _emailController.clear();
-    _taglineController.clear();
-    setState(() {
-      _selectedGifBytes = null;
-      _selectedGifFileName = null;
-      _gifValidationError = false;
-    });
+  Future<void> _sendFeedbackEmail(Map<String, dynamic> feedbackData) async {
+    // For now, we'll use a simple approach with mailto
+    // In a real app, you'd want to use a backend service or email API
+
+    final subject = 'Gify Feature Request';
+    final body = '''
+New Feature Request from Gify User
+
+Name: ${feedbackData['name'].isEmpty ? 'Anonymous' : feedbackData['name']}
+Email: ${feedbackData['email'].isEmpty ? 'Not provided' : feedbackData['email']}
+Timestamp: ${feedbackData['timestamp']}
+
+Feature Request:
+${feedbackData['featureRequest']}
+
+User Agent: ${feedbackData['userAgent']}
+''';
+
+    final mailtoUrl = 'mailto:akbarijay1@gmail.com?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}';
+
+    // Open email client
+    web.window.open(mailtoUrl, '_blank');
+
+    // Alternative: Use a service like EmailJS or your backend API
+    // For production, implement proper email sending
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
@@ -763,32 +630,6 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         margin: const EdgeInsets.all(16),
       ),
-    );
-  }
-}
-
-class HeaderWidget extends StatelessWidget {
-  const HeaderWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Join Our Startup Showcase',
-          style: AppTextStyles.headlineMedium.copyWith(
-            color: AppColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Submit your startup to be featured in our 88x31 pixel showcase gallery',
-          style: AppTextStyles.bodyLarge.copyWith(
-            color: AppColors.textSecondaryWithOpacity(0.8),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -13,6 +13,8 @@ import 'providers/startup_provider.dart';
 import 'screens/add_startup_screen.dart';
 import '../widgets/cyber_action_button.dart';
 import '../widgets/animated_rotating_title.dart';
+import 'screens/about_us_page.dart';
+import 'screens/feedback_screen.dart';
 import 'utils/validators.dart';
 import 'theme/app_theme.dart';
 import 'theme/app_colors.dart';
@@ -55,6 +57,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   int _dialogCount = 0;
   StartupProvider? _provider;
   bool _isSpotlightEnabled = true; // New state for spotlight toggle
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -121,6 +124,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   void _showRandomStartupDialog() {
     if (!mounted || _isDialogShowing || _provider == null) return;
+
+    // Don't show dialog if drawer is open
+    if (_scaffoldKey.currentState?.isDrawerOpen ?? false) return;
 
     // Don't show dialog if HomePage is not the current route
     if (ModalRoute.of(context)?.isCurrent != true) return;
@@ -304,9 +310,264 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     return crossAxisCount.clamp(2, 6);
   }
 
+  Widget _buildDrawer() {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.5, // Reduced from 0.7 to 0.5 for better UX
+      decoration: BoxDecoration(
+        color: Colors.transparent, // Fully transparent background
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(16),
+          bottomRight: Radius.circular(16),
+        ),
+        border: Border.all(
+          color: AppColors.primaryWithOpacity(0.3),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryWithOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(5, 0),
+          ),
+        ],
+      ),
+      child: Container(
+        // Circuit background like add_startup_screen
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/circuit.gif'),
+            fit: BoxFit.none,
+            alignment: Alignment.center,
+            repeat: ImageRepeat.repeat,
+          ),
+        ),
+        child: Container(
+          // Gradient overlay like add_startup_screen
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColors.backgroundWithOpacity(0.85),
+                AppColors.backgroundWithOpacity(0.95),
+              ],
+            ),
+          ),
+          child: Column(
+            children: [
+              // Header with close button - cyber styled (removed nested border radius)
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primary, Colors.blue],
+                  ),
+                  border: Border.all(
+                    color: AppColors.primaryWithOpacity(0.5),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryWithOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryWithOpacity(0.2),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.primaryWithOpacity(0.5),
+                              width: 1,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.auto_awesome,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Gify',
+                          style: AppTextStyles.titleLarge.copyWith(
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                color: AppColors.primary,
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Close button - cyber styled
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryWithOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppColors.primaryWithOpacity(0.5),
+                          width: 1,
+                        ),
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Menu items - cyber styled
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Column(
+                    children: [
+                      // About Us menu item - cyber styled
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.primaryWithOpacity(0.3),
+                            width: 1,
+                          ),
+                          color: AppColors.surfaceWithOpacity(0.8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primaryWithOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryWithOpacity(0.2),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.primaryWithOpacity(0.5),
+                                width: 1,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.info_outline,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                          title: Text(
+                            'About Us',
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            color: AppColors.primary,
+                            size: 16,
+                          ),
+                          onTap: () {
+                            Navigator.pop(context); // Close drawer
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const AboutUsPage()),
+                            );
+                          },
+                        ),
+                      ),
+                      // Feedback menu item - cyber styled
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.primaryWithOpacity(0.3),
+                            width: 1,
+                          ),
+                          color: AppColors.surfaceWithOpacity(0.8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primaryWithOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryWithOpacity(0.2),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.primaryWithOpacity(0.5),
+                                width: 1,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.feedback,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ),
+                          title: Text(
+                            'Feedback',
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            color: AppColors.primary,
+                            size: 16,
+                          ),
+                          onTap: () {
+                            Navigator.pop(context); // Close drawer
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const FeedbackScreen()),
+                            );
+                          },
+                        ),
+                      ),
+                      // Add more menu items here if needed
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: _buildDrawer(),
       body: Stack(
         children: [
           Container(
@@ -330,8 +591,42 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       Container(
                         padding: const EdgeInsets.all(16.0),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            // Hamburger menu icon - cyber styled
+                            Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryWithOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: AppColors.primaryWithOpacity(0.5),
+                                  width: 1,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primaryWithOpacity(0.3),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  _scaffoldKey.currentState?.isDrawerOpen ?? false
+                                      ? Icons.close
+                                      : Icons.menu,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+                                    _scaffoldKey.currentState?.closeDrawer();
+                                  } else {
+                                    _scaffoldKey.currentState?.openDrawer();
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 16),
                             // Centered rotating hero title for better first impression
                             Expanded(
                               child: Center(
