@@ -577,7 +577,7 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           const SizedBox(height: 12),
           ...const [
             '• File format: GIF only (.gif extension + valid GIF content required)',
-            '• GIF dimensions: 88x31 pixels (optimal)',
+            '• GIF dimensions: 88x31 pixels (required)',
             '• File size limit: 2MB maximum',
             '• Network address must be accessible',
             '• Content review process: 24-48 hours',
@@ -626,15 +626,28 @@ class _AddStartupScreenState extends State<AddStartupScreen>
         return;
       }
 
-      // Optional: Validate dimensions (if we can determine them)
-      // For now, we'll skip dimension validation as it requires additional packages
-      // and the guidelines already mention the optimal dimensions
+      // Validate dimensions (must be exactly 88x31)
+      if (bytes.length < 10) {
+        _showSnackBar(
+          'Invalid GIF file: unable to read dimensions',
+          isError: true,
+        );
+        return;
+      }
+      final width = bytes[6] + (bytes[7] << 8);
+      final height = bytes[8] + (bytes[9] << 8);
+      if (width != 88 || height != 31) {
+        _showSnackBar(
+          'GIF dimensions must be exactly 88x31 pixels',
+          isError: true,
+        );
+        return;
+      }
 
       setState(() {
         _selectedGifBytes = bytes;
         _selectedGifFileName = image.name;
-        _gifValidationError =
-            false; // Clear validation error when GIF is selected
+        _gifValidationError = false;
       });
 
       _showSnackBar('GIF file uploaded successfully!', isError: false);
@@ -694,9 +707,11 @@ class _AddStartupScreenState extends State<AddStartupScreen>
           fontSize: 16.0,
         );
       }
-    } catch (e) {
+    } catch (e, s) {
       // On error: Show SnackBar and reset form state
       _showSnackBar('System error: $e', isError: true);
+      print('Error submitting startup: $e');
+      debugPrintStack(stackTrace: s);
       _resetForm();
     } finally {
       setState(() {
