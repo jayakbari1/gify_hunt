@@ -4,21 +4,22 @@ import 'dart:math';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:web/web.dart' as web;
 
 import '../models/startup.dart';
+import '../widgets/animated_rotating_title.dart';
+import '../widgets/cyber_action_button.dart';
 import 'config/firebase_options_dev.dart';
 import 'constants/str_constants.dart';
 import 'providers/startup_provider.dart';
-import 'screens/add_startup_screen.dart';
-import '../widgets/cyber_action_button.dart';
-import '../widgets/animated_rotating_title.dart';
 import 'screens/about_us_page.dart';
+import 'screens/add_startup_screen.dart';
 import 'screens/feedback_screen.dart';
-import 'utils/validators.dart';
-import 'theme/app_theme.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_text_styles.dart';
+import 'theme/app_theme.dart';
+import 'utils/validators.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,10 +36,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => StartupProvider()..loadStartups(),
-      child: MaterialApp(
-        title: 'Gify',
-        theme: AppTheme.theme,
-        home: const HomePage(),
+      child: ShowCaseWidget(
+        builder: (context) => MaterialApp(
+          title: 'Gify',
+          theme: AppTheme.theme,
+          home: const HomePage(),
+        ),
       ),
     );
   }
@@ -59,11 +62,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool _isSpotlightEnabled = true; // New state for spotlight toggle
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  // Showcase keys
+  final GlobalKey _menuKey = GlobalKey();
+  final GlobalKey _spotlightKey = GlobalKey();
+  final GlobalKey _addStartupKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _resetTimer();
+
+    // Check if showcase has been shown before
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndShowShowcase();
+    });
   }
 
   @override
@@ -101,6 +114,22 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     } else {
       // Restart timer when spotlight is enabled
       _resetTimer();
+    }
+  }
+
+  void _checkAndShowShowcase() {
+    // Check localStorage for showcase flag
+    final hasShownShowcase =
+        web.window.localStorage.getItem('hasShownShowcase') == 'true';
+
+    if (!hasShownShowcase) {
+      // Start showcase
+      ShowCaseWidget.of(
+        context,
+      ).startShowCase([_menuKey, _spotlightKey, _addStartupKey]);
+
+      // Mark as shown
+      web.window.localStorage.setItem('hasShownShowcase', 'true');
     }
   }
 
@@ -222,7 +251,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             ElevatedButton(
                               onPressed: () {
                                 autoCloseTimer?.cancel();
-                                web.window.open(Validators.normalizeUrl(startup.websiteUrl), '_blank');
+                                web.window.open(
+                                  Validators.normalizeUrl(startup.websiteUrl),
+                                  '_blank',
+                                );
                                 Navigator.of(context).pop();
                                 _resetTimer(); // Reset timer when user takes action
                               },
@@ -312,17 +344,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   Widget _buildDrawer() {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.5, // Reduced from 0.7 to 0.5 for better UX
+      width:
+          MediaQuery.of(context).size.width *
+          0.5, // Reduced from 0.7 to 0.5 for better UX
       decoration: BoxDecoration(
         color: Colors.transparent, // Fully transparent background
         borderRadius: const BorderRadius.only(
           topRight: Radius.circular(16),
           bottomRight: Radius.circular(16),
         ),
-        border: Border.all(
-          color: AppColors.primaryWithOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.primaryWithOpacity(0.3), width: 1),
         boxShadow: [
           BoxShadow(
             color: AppColors.primaryWithOpacity(0.2),
@@ -422,11 +453,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         ),
                       ),
                       child: IconButton(
-                        icon: Icon(
-                          Icons.close,
-                          color: Colors.white,
-                          size: 20,
-                        ),
+                        icon: Icon(Icons.close, color: Colors.white, size: 20),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ),
@@ -441,7 +468,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     children: [
                       // About Us menu item - cyber styled
                       Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
@@ -490,14 +520,19 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             Navigator.pop(context); // Close drawer
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => const AboutUsPage()),
+                              MaterialPageRoute(
+                                builder: (_) => const AboutUsPage(),
+                              ),
                             );
                           },
                         ),
                       ),
                       // Feedback menu item - cyber styled
                       Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
@@ -546,7 +581,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                             Navigator.pop(context); // Close drawer
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => const FeedbackScreen()),
+                              MaterialPageRoute(
+                                builder: (_) => const FeedbackScreen(),
+                              ),
                             );
                           },
                         ),
@@ -593,37 +630,47 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         child: Row(
                           children: [
                             // Hamburger menu icon - cyber styled
-                            Container(
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryWithOpacity(0.2),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: AppColors.primaryWithOpacity(0.5),
-                                  width: 1,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.primaryWithOpacity(0.3),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
+                            Showcase(
+                              key: _menuKey,
+                              title: 'Navigation Menu',
+                              description:
+                                  'Access app information, contact details, and provide feedback to help us improve',
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryWithOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: AppColors.primaryWithOpacity(0.5),
+                                    width: 1,
                                   ),
-                                ],
-                              ),
-                              child: IconButton(
-                                icon: Icon(
-                                  _scaffoldKey.currentState?.isDrawerOpen ?? false
-                                      ? Icons.close
-                                      : Icons.menu,
-                                  color: Colors.white,
-                                  size: 20,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.primaryWithOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
-                                onPressed: () {
-                                  if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
-                                    _scaffoldKey.currentState?.closeDrawer();
-                                  } else {
-                                    _scaffoldKey.currentState?.openDrawer();
-                                  }
-                                },
+                                child: IconButton(
+                                  icon: Icon(
+                                    _scaffoldKey.currentState?.isDrawerOpen ??
+                                            false
+                                        ? Icons.close
+                                        : Icons.menu,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  onPressed: () {
+                                    if (_scaffoldKey
+                                            .currentState
+                                            ?.isDrawerOpen ??
+                                        false) {
+                                      _scaffoldKey.currentState?.closeDrawer();
+                                    } else {
+                                      _scaffoldKey.currentState?.openDrawer();
+                                    }
+                                  },
+                                ),
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -642,31 +689,45 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               ),
                             ),
                             // Spotlight Toggle (responsive)
-                            LayoutBuilder(builder: (context, constraints) {
-                              final isNarrow = constraints.maxWidth < 360;
-                              return CyberActionButton(
-                                icon: Icons.auto_awesome,
-                                text: isNarrow ? '' : 'Spotlight',
-                                isEnabled: _isSpotlightEnabled,
-                                compact: isNarrow,
-                                trailingWidget: Transform.scale(
-                                  scale: isNarrow ? 0.7 : 0.85,
-                                  child: Switch(
-                                    value: _isSpotlightEnabled,
-                                    onChanged: _toggleSpotlight,
-                                    activeColor: AppColors.primary,
-                                    activeTrackColor:
-                                        AppColors.primaryWithOpacity(0.3),
-                                    inactiveThumbColor:
-                                        AppColors.textPrimaryWithOpacity(0.7),
-                                    inactiveTrackColor:
-                                        AppColors.textPrimaryWithOpacity(0.2),
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                final isNarrow = constraints.maxWidth < 360;
+                                return Showcase(
+                                  key: _spotlightKey,
+                                  title: 'Spotlight Feature',
+                                  description:
+                                      'Toggle to display featured startup highlights periodically',
+                                  child: CyberActionButton(
+                                    icon: Icons.auto_awesome,
+                                    text: '',
+                                    // Always show only icon, no text
+                                    isEnabled: _isSpotlightEnabled,
+                                    compact: true,
+                                    // Always compact to hide text
+                                    trailingWidget: Transform.scale(
+                                      scale: isNarrow ? 0.7 : 0.85,
+                                      child: Switch(
+                                        value: _isSpotlightEnabled,
+                                        onChanged: _toggleSpotlight,
+                                        activeColor: AppColors.primary,
+                                        activeTrackColor:
+                                            AppColors.primaryWithOpacity(0.3),
+                                        inactiveThumbColor:
+                                            AppColors.textPrimaryWithOpacity(
+                                              0.7,
+                                            ),
+                                        inactiveTrackColor:
+                                            AppColors.textPrimaryWithOpacity(
+                                              0.2,
+                                            ),
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              );
-                            }),
+                                );
+                              },
+                            ),
                           ],
                         ),
                       ),
@@ -719,12 +780,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            CyberActionButton(
-              icon: Icons.add_business,
-              text: 'Add Startup',
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AddStartupScreen()),
+            Showcase(
+              key: _addStartupKey,
+              title: 'Add Your Startup',
+              description:
+                  'Join our curated marketplace and get your startup featured in our professional 88×31 pixel showcase',
+              child: CyberActionButton(
+                icon: Icons.add_business,
+                text: 'Add Startup',
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AddStartupScreen()),
+                ),
               ),
             ),
           ],
@@ -784,7 +851,10 @@ class _GifContainerState extends State<GifContainer>
     return Tooltip(
       message: widget.name,
       child: GestureDetector(
-        onTap: () => web.window.open(Validators.normalizeUrl(widget.websiteUrl), '_blank'),
+        onTap: () => web.window.open(
+          Validators.normalizeUrl(widget.websiteUrl),
+          '_blank',
+        ),
         child: MouseRegion(
           onEnter: (_) {
             _animationController.forward();
@@ -797,11 +867,7 @@ class _GifContainerState extends State<GifContainer>
             builder: (context, child) {
               return Transform.scale(
                 scale: _scaleAnimation.value,
-                child: SizedBox(
-                  width: 40,
-                  height: 80,
-                  child: _buildImage(),
-                ),
+                child: SizedBox(width: 40, height: 80, child: _buildImage()),
               );
             },
           ),

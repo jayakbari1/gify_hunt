@@ -46,6 +46,7 @@ dependencies:
   fluttertoast: ^8.2.4
   js: ^0.7.0
   web: ^1.0.0
+  showcaseview: ^3.0.0
 
 dev_dependencies:
   flutter_test:
