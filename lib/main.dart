@@ -15,7 +15,6 @@ import 'constants/str_constants.dart';
 import 'providers/startup_provider.dart';
 import 'screens/about_us_page.dart';
 import 'screens/add_startup_screen.dart';
-import 'screens/feedback_screen.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_text_styles.dart';
 import 'theme/app_theme.dart';
@@ -57,7 +56,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Timer? _timer;
   bool _isDialogShowing = false;
-  int _dialogCount = 0;
   StartupProvider? _provider;
   bool _isSpotlightEnabled = true; // New state for spotlight toggle
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -169,7 +167,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final startup = approvedStartups[random.nextInt(approvedStartups.length)];
 
     _isDialogShowing = true;
-    _dialogCount++;
 
     Timer? autoCloseTimer;
 
@@ -636,66 +633,66 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         ),
                       ),
                       // Feedback menu item - cyber styled
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.primaryWithOpacity(0.3),
-                            width: 1,
-                          ),
-                          color: AppColors.surfaceWithOpacity(0.8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primaryWithOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: ListTile(
-                          leading: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryWithOpacity(0.2),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: AppColors.primaryWithOpacity(0.5),
-                                width: 1,
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.feedback,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                          ),
-                          title: Text(
-                            'Feedback',
-                            style: AppTextStyles.bodyLarge.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          trailing: Icon(
-                            Icons.arrow_forward_ios,
-                            color: AppColors.primary,
-                            size: 16,
-                          ),
-                          onTap: () {
-                            Navigator.pop(context); // Close drawer
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const FeedbackScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                      // Container(
+                      //   margin: const EdgeInsets.symmetric(
+                      //     horizontal: 16,
+                      //     vertical: 4,
+                      //   ),
+                      //   decoration: BoxDecoration(
+                      //     borderRadius: BorderRadius.circular(12),
+                      //     border: Border.all(
+                      //       color: AppColors.primaryWithOpacity(0.3),
+                      //       width: 1,
+                      //     ),
+                      //     color: AppColors.surfaceWithOpacity(0.8),
+                      //     boxShadow: [
+                      //       BoxShadow(
+                      //         color: AppColors.primaryWithOpacity(0.1),
+                      //         blurRadius: 8,
+                      //         offset: const Offset(0, 2),
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   child: ListTile(
+                      //     leading: Container(
+                      //       padding: const EdgeInsets.all(8),
+                      //       decoration: BoxDecoration(
+                      //         color: AppColors.primaryWithOpacity(0.2),
+                      //         shape: BoxShape.circle,
+                      //         border: Border.all(
+                      //           color: AppColors.primaryWithOpacity(0.5),
+                      //           width: 1,
+                      //         ),
+                      //       ),
+                      //       child: Icon(
+                      //         Icons.feedback,
+                      //         color: Colors.white,
+                      //         size: 18,
+                      //       ),
+                      //     ),
+                      //     title: Text(
+                      //       'Feedback',
+                      //       style: AppTextStyles.bodyLarge.copyWith(
+                      //         color: AppColors.textPrimary,
+                      //         fontWeight: FontWeight.w600,
+                      //       ),
+                      //     ),
+                      //     trailing: Icon(
+                      //       Icons.arrow_forward_ios,
+                      //       color: AppColors.primary,
+                      //       size: 16,
+                      //     ),
+                      //     onTap: () {
+                      //       Navigator.pop(context); // Close drawer
+                      //       Navigator.push(
+                      //         context,
+                      //         MaterialPageRoute(
+                      //           builder: (_) => const FeedbackScreen(),
+                      //         ),
+                      //       );
+                      //     },
+                      //   ),
+                      // ),
                       // Add more menu items here if needed
                     ],
                   ),
