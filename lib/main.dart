@@ -200,124 +200,232 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 ),
               ),
               // Foreground content
-              Container(
-                width: 450,
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: AppColors.textPrimary.withValues(alpha: 0.95),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.background, width: 2),
-                ),
-                child: Stack(
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final screenWidth = MediaQuery.of(context).size.width;
+                  final dialogWidth = screenWidth < 500
+                      ? screenWidth * 0.9
+                      : 450.0;
+                  final isNarrow = screenWidth < 500;
+                  final contentPadding = isNarrow
+                      ? 16.0
+                      : 32.0; // Responsive padding
+                  final closeButtonSpace = isNarrow
+                      ? 32.0
+                      : 40.0; // Responsive space for close button
+
+                  return Container(
+                    width: dialogWidth,
+                    padding: EdgeInsets.all(contentPadding),
+                    decoration: BoxDecoration(
+                      color: AppColors.textPrimary.withValues(alpha: 0.95),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.background, width: 2),
+                    ),
+                    child: Stack(
                       children: [
-                        const SizedBox(height: 40), // Space for close button
-                        Text(
-                          _dialogCount % 2 == 1
-                              ? StrConstants.startupSpotlight
-                              : StrConstants.taglineFlash,
-                          style: AppTextStyles.headlineMedium.copyWith(
-                            color: AppColors.background,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          startup.name,
-                          style: AppTextStyles.titleLarge.copyWith(
-                            color: AppColors.background,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          '"${startup.tagline}"',
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            color: AppColors.background,
-                            fontStyle: FontStyle.italic,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 32),
-                        // Buttons row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                autoCloseTimer?.cancel();
-                                web.window.open(
-                                  Validators.normalizeUrl(startup.websiteUrl),
-                                  '_blank',
-                                );
-                                Navigator.of(context).pop();
-                                _resetTimer(); // Reset timer when user takes action
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.background,
-                                foregroundColor: AppColors.textPrimary,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
+                            SizedBox(height: closeButtonSpace),
+                            // Responsive space for close button
+                            Text(
+                              StrConstants.startupSpotlight,
+                              style: AppTextStyles.headlineMedium.copyWith(
+                                color: AppColors.background,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
                               ),
-                              child: Text(
-                                StrConstants.visitSite,
-                                style: AppTextStyles.button,
-                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            ElevatedButton(
-                              onPressed: () {
-                                autoCloseTimer?.cancel();
-                                Navigator.of(context).pop();
-                                _resetTimer(); // Reset timer when user takes action
+                            const SizedBox(height: 24),
+                            Text(
+                              startup.name,
+                              style: AppTextStyles.titleLarge.copyWith(
+                                color: AppColors.background,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              '"${startup.tagline}"',
+                              style: AppTextStyles.bodyLarge.copyWith(
+                                color: AppColors.background,
+                                fontStyle: FontStyle.italic,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 32),
+                            // Buttons - responsive layout
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                final screenWidth = MediaQuery.of(
+                                  context,
+                                ).size.width;
+                                final isNarrow =
+                                    screenWidth <
+                                    500; // Breakpoint for responsive design
+
+                                return isNarrow
+                                    ? Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          // Visit Site button
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                autoCloseTimer?.cancel();
+                                                web.window.open(
+                                                  Validators.normalizeUrl(
+                                                    startup.websiteUrl,
+                                                  ),
+                                                  '_blank',
+                                                );
+                                                Navigator.of(context).pop();
+                                                _resetTimer(); // Reset timer when user takes action
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    AppColors.background,
+                                                foregroundColor:
+                                                    AppColors.textPrimary,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 24,
+                                                      vertical: 12,
+                                                    ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                StrConstants.visitSite,
+                                                style: AppTextStyles.button,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          // Cancel button
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                autoCloseTimer?.cancel();
+                                                Navigator.of(context).pop();
+                                                _resetTimer(); // Reset timer when user takes action
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.grey,
+                                                foregroundColor:
+                                                    AppColors.background,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 24,
+                                                      vertical: 12,
+                                                    ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                StrConstants.cancel,
+                                                style: AppTextStyles.button,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              autoCloseTimer?.cancel();
+                                              web.window.open(
+                                                Validators.normalizeUrl(
+                                                  startup.websiteUrl,
+                                                ),
+                                                '_blank',
+                                              );
+                                              Navigator.of(context).pop();
+                                              _resetTimer(); // Reset timer when user takes action
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  AppColors.background,
+                                              foregroundColor:
+                                                  AppColors.textPrimary,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 24,
+                                                    vertical: 12,
+                                                  ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              StrConstants.visitSite,
+                                              style: AppTextStyles.button,
+                                            ),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              autoCloseTimer?.cancel();
+                                              Navigator.of(context).pop();
+                                              _resetTimer(); // Reset timer when user takes action
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.grey,
+                                              foregroundColor:
+                                                  AppColors.background,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 24,
+                                                    vertical: 12,
+                                                  ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              StrConstants.cancel,
+                                              style: AppTextStyles.button,
+                                            ),
+                                          ),
+                                        ],
+                                      );
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey,
-                                foregroundColor: AppColors.background,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
-                              child: Text(
-                                StrConstants.cancel,
-                                style: AppTextStyles.button,
-                              ),
                             ),
                           ],
                         ),
+                        Positioned(
+                          top: isNarrow ? 6 : 10, // Responsive positioning
+                          right: isNarrow ? 6 : 10, // Responsive positioning
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.close,
+                              color: AppColors.background,
+                              size: isNarrow ? 24 : 28, // Responsive icon size
+                            ),
+                            onPressed: () {
+                              autoCloseTimer?.cancel();
+                              Navigator.of(context).pop();
+                              _resetTimer(); // Reset timer when user closes dialog
+                            },
+                          ),
+                        ),
                       ],
                     ),
-                    Positioned(
-                      top: 10,
-                      right: 10,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.close,
-                          color: AppColors.background,
-                          size: 28,
-                        ),
-                        onPressed: () {
-                          autoCloseTimer?.cancel();
-                          Navigator.of(context).pop();
-                          _resetTimer(); // Reset timer when user closes dialog
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
             ],
           ),
@@ -629,47 +737,55 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         padding: const EdgeInsets.all(16.0),
                         child: Row(
                           children: [
-                            // Hamburger menu icon - cyber styled
+                            // Hamburger menu icon - cyber styled, minimal padding
                             Showcase(
                               key: _menuKey,
                               title: 'Navigation Menu',
                               description:
                                   'Access app information, contact details, and provide feedback to help us improve',
                               child: Container(
+                                padding: const EdgeInsets.all(6),
+                                // Reduced from IconButton default
                                 decoration: BoxDecoration(
-                                  color: AppColors.primaryWithOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(8),
+                                  color: AppColors.backgroundWithOpacity(0.7),
+                                  borderRadius: BorderRadius.circular(4),
                                   border: Border.all(
                                     color: AppColors.primaryWithOpacity(0.5),
-                                    width: 1,
+                                    width: 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
                                       color: AppColors.primaryWithOpacity(0.3),
-                                      blurRadius: 4,
+                                      blurRadius: 8,
                                       offset: const Offset(0, 2),
                                     ),
                                   ],
                                 ),
-                                child: IconButton(
-                                  icon: Icon(
-                                    _scaffoldKey.currentState?.isDrawerOpen ??
-                                            false
-                                        ? Icons.close
-                                        : Icons.menu,
-                                    color: Colors.white,
-                                    size: 20,
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(4),
+                                    onTap: () {
+                                      if (_scaffoldKey
+                                              .currentState
+                                              ?.isDrawerOpen ??
+                                          false) {
+                                        _scaffoldKey.currentState
+                                            ?.closeDrawer();
+                                      } else {
+                                        _scaffoldKey.currentState?.openDrawer();
+                                      }
+                                    },
+                                    child: Icon(
+                                      _scaffoldKey.currentState?.isDrawerOpen ??
+                                              false
+                                          ? Icons.close
+                                          : Icons.menu,
+                                      color: AppColors.primary,
+                                      size:
+                                          18, // Consistent with CyberActionButton
+                                    ),
                                   ),
-                                  onPressed: () {
-                                    if (_scaffoldKey
-                                            .currentState
-                                            ?.isDrawerOpen ??
-                                        false) {
-                                      _scaffoldKey.currentState?.closeDrawer();
-                                    } else {
-                                      _scaffoldKey.currentState?.openDrawer();
-                                    }
-                                  },
                                 ),
                               ),
                             ),
