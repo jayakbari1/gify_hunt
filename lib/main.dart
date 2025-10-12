@@ -448,10 +448,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Widget _buildDrawer() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final drawerWidth = screenWidth < 600
+        ? screenWidth * 0.8
+        : 320.0; // Responsive width
+
     return Container(
-      width:
-          MediaQuery.of(context).size.width *
-          0.5, // Reduced from 0.7 to 0.5 for better UX
+      width: drawerWidth,
       decoration: BoxDecoration(
         color: Colors.transparent, // Fully transparent background
         borderRadius: const BorderRadius.only(
@@ -611,6 +614,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           ),
                           title: Text(
                             'About Us',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.bodyLarge.copyWith(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w600,
@@ -672,6 +677,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       //     ),
                       //     title: Text(
                       //       'Feedback',
+                      //       maxLines: 1,
+                      //       overflow: TextOverflow.ellipsis,
                       //       style: AppTextStyles.bodyLarge.copyWith(
                       //         color: AppColors.textPrimary,
                       //         fontWeight: FontWeight.w600,
