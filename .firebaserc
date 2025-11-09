@@ -1,0 +1,27 @@
+{
+  "projects": {
+    "default": "gify-dev",
+    "dev": "gify-dev",
+    "prod": "gify-marketplace"
+  },
+  "targets": {
+    "gify-dev": {
+      "hosting": {
+        "dev": [
+          "gify-dev"
+        ],
+        "prod": [
+          "gify-marketplace"
+        ]
+      }
+    },
+    "gify-marketplace": {
+      "hosting": {
+        "prod": [
+          "gify-marketplace"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

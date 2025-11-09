@@ -10,7 +10,9 @@ import 'package:web/web.dart' as web;
 import '../models/startup.dart';
 import '../widgets/animated_rotating_title.dart';
 import '../widgets/cyber_action_button.dart';
+import 'config/environment.dart';
 import 'config/firebase_options_dev.dart';
+import 'config/firebase_options_prod.dart';
 import 'constants/str_constants.dart';
 import 'providers/startup_provider.dart';
 import 'screens/about_us_page.dart';
@@ -22,9 +24,21 @@ import 'utils/validators.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptionsDev.currentPlatform,
+  
+  // Determine environment from build-time constant or default to dev
+  // This can be set via --dart-define=ENVIRONMENT=prod during build
+  const String environment = String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev');
+  EnvironmentConfig.setEnvironment(
+    environment == 'prod' ? Environment.prod : Environment.dev,
   );
+  
+  // Initialize Firebase with the appropriate configuration
+  await Firebase.initializeApp(
+    options: EnvironmentConfig.isProduction
+        ? DefaultFirebaseOptionsProd.currentPlatform
+        : DefaultFirebaseOptionsDev.currentPlatform,
+  );
+  
   runApp(const MyApp());
 }
 

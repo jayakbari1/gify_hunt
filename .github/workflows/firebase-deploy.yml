@@ -1,0 +1,56 @@
+name: Deploy to Firebase
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.6'
+          channel: 'stable'
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Build Flutter Web
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            flutter build web --release --dart-define=ENVIRONMENT=prod
+            # Inject environment variable into built index.html
+            sed -i 's|<script src="flutter_bootstrap.js"|<script>window.ENVIRONMENT="prod";</script><script src="flutter_bootstrap.js"|' build/web/index.html
+          else
+            flutter build web --release --dart-define=ENVIRONMENT=dev
+            # Inject environment variable into built index.html
+            sed -i 's|<script src="flutter_bootstrap.js"|<script>window.ENVIRONMENT="dev";</script><script src="flutter_bootstrap.js"|' build/web/index.html
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy to Firebase
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            firebase deploy --only hosting:prod --project ${{ secrets.FIREBASE_PROD_PROJECT_ID }} --token ${{ secrets.FIREBASE_TOKEN }}
+          else
+            firebase deploy --only hosting:dev --project ${{ secrets.FIREBASE_DEV_PROJECT_ID }} --token ${{ secrets.FIREBASE_TOKEN }}
+          fi
+

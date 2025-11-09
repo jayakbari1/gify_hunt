@@ -38,21 +38,48 @@
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
-
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    const firebaseConfig = {
-      apiKey: "AIzaSyBIF1bYXfUtQoevk2IGSYGAqSc-ykoGXLo",
-      authDomain: "gify-dev.firebaseapp.com",
-      databaseURL: "https://gify-dev-default-rtdb.firebaseio.com",
-      projectId: "gify-dev",
-      storageBucket: "gify-dev.firebasestorage.app",
-      messagingSenderId: "272804728133",
-      appId: "1:272804728133:web:6d2142128172629eec022c",
-      measurementId: "G-3HDBYZV1D4"
+    
+    // Firebase configurations for different environments
+    const firebaseConfigs = {
+      dev: {
+        apiKey: "AIzaSyBIF1bYXfUtQoevk2IGSYGAqSc-ykoGXLo",
+        authDomain: "gify-dev.firebaseapp.com",
+        databaseURL: "https://gify-dev-default-rtdb.firebaseio.com",
+        projectId: "gify-dev",
+        storageBucket: "gify-dev.firebasestorage.app",
+        messagingSenderId: "272804728133",
+        appId: "1:272804728133:web:6d2142128172629eec022c",
+        measurementId: "G-3HDBYZV1D4"
+      },
+      prod: {
+        apiKey: "AIzaSyDKl3cYWYMRtYDf_DueDAxmL-5a_sgbiO0",
+        authDomain: "gify-marketplace.firebaseapp.com",
+        projectId: "gify-marketplace",
+        storageBucket: "gify-marketplace.firebasestorage.app",
+        messagingSenderId: "1077207578725",
+        appId: "1:1077207578725:web:40e4299f8a46ac96c02e8c",
+        measurementId: "G-22KNB12DJB"
+      }
     };
+
+    // Determine environment based on build-time variable or hostname
+    const getEnvironment = () => {
+      // Check for build-time environment variable (injected during CI/CD build)
+      if (typeof window !== 'undefined' && window.ENVIRONMENT) {
+        return window.ENVIRONMENT;
+      }
+      // Fallback: Check hostname - adjust these domains to match your actual hosting URLs
+      const hostname = window.location.hostname;
+      if (hostname.includes('gify-marketplace') || hostname.includes('gify-hunt') || 
+          hostname === 'gify.com' || (hostname.includes('firebaseapp.com') && !hostname.includes('dev'))) {
+        return 'prod';
+      }
+      // Default to dev
+      return 'dev';
+    };
+
+    const environment = getEnvironment();
+    const firebaseConfig = firebaseConfigs[environment] || firebaseConfigs.dev;
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
