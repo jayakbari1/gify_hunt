@@ -1,5 +1,4 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
@@ -39,7 +38,7 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
+  static final FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyC5z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9',
     appId: '1:123456789012:web:abcdef1234567890abcdef',
     messagingSenderId: '123456789012',
@@ -49,7 +48,7 @@ class DefaultFirebaseOptions {
     measurementId: 'G-ABCDEFGHIJ',
   );
 
-  static const FirebaseOptions android = FirebaseOptions(
+  static final FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyC5z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9',
     appId: '1:123456789012:web:abcdef1234567890abcdef',
     messagingSenderId: '123456789012',
@@ -57,7 +56,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'gify-dev.appspot.com',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
+  static final FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyC5z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9',
     appId: '1:123456789012:web:abcdef1234567890abcdef',
     messagingSenderId: '123456789012',
@@ -65,7 +64,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'gify-dev.appspot.com',
   );
 
-  static const FirebaseOptions macos = FirebaseOptions(
+  static final FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyC5z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9',
     appId: '1:123456789012:web:abcdef1234567890abcdef',
     messagingSenderId: '123456789012',
@@ -73,7 +72,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'gify-dev.appspot.com',
   );
 
-  static const FirebaseOptions windows = FirebaseOptions(
+  static final FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyC5z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9z9',
     appId: '1:123456789012:web:abcdef1234567890abcdef',
     messagingSenderId: '123456789012',

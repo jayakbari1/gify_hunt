@@ -24,21 +24,24 @@ import 'utils/validators.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Determine environment from build-time constant or default to dev
   // This can be set via --dart-define=ENVIRONMENT=prod during build
-  const String environment = String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev');
+  const String environment = String.fromEnvironment(
+    'ENVIRONMENT',
+    defaultValue: 'dev',
+  );
   EnvironmentConfig.setEnvironment(
     environment == 'prod' ? Environment.prod : Environment.dev,
   );
-  
+
   // Initialize Firebase with the appropriate configuration
   await Firebase.initializeApp(
     options: EnvironmentConfig.isProduction
         ? DefaultFirebaseOptionsProd.currentPlatform
         : DefaultFirebaseOptionsDev.currentPlatform,
   );
-  
+
   runApp(const MyApp());
 }
 
