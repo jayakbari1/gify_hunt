@@ -1,5 +1,7 @@
 {
- "name": "App",
+ "name": "Gify - Micro Banner Marketplace",
+ "short_name": "Gify",
+ "description": "Discover and showcase innovative startups with micro banners",
  "icons": [
   {
    "src": "\/android-icon-36x36.png",
@@ -37,5 +39,10 @@
    "type": "image\/png",
    "density": "4.0"
   }
- ]
+ ],
+ "theme_color": "#ffffff",
+ "background_color": "#ffffff",
+ "display": "standalone",
+ "start_url": "/",
+ "scope": "/"
 }
