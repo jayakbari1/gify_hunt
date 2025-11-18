@@ -29,7 +29,7 @@ jobs:
       - name: Build Flutter Web
         run: |
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
-            flutter build web --release --dart-define=ENVIRONMENT=prod
+            flutter build web --release -t lib/main_prod.dart --dart-define=ENVIRONMENT=prod
             # Inject environment variable into built index.html
             sed -i 's|<script src="flutter_bootstrap.js"|<script>window.ENVIRONMENT="prod";</script><script src="flutter_bootstrap.js"|' build/web/index.html
           else
